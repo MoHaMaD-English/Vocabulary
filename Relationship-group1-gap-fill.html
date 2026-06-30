@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gap-Fill · Attraction & First Steps</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blush:    #F2DCDC;
+    --rose:     #C45C6A;
+    --deep:     #2B1B2E;
+    --plum:     #6B3E5E;
+    --cream:    #FDF8F5;
+    --mist:     #EDE4E9;
+    --correct:  #3A7D5E;
+    --wrong:    #B03A3A;
+    --correct-bg: #E8F5EF;
+    --wrong-bg:   #FDECEA;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--deep);
+    padding: 28px 24px 22px;
+    text-align: center;
+  }
+  header .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blush);
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 5.5vw, 32px);
+    color: #fff;
+    line-height: 1.15;
+  }
+  header h1 em {
+    font-style: italic;
+    color: var(--blush);
+  }
+  header .subtitle {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #c4b3be;
+  }
+
+  /* ── WORD BANK ── */
+  .bank-wrap {
+    max-width: 640px;
+    margin: 24px auto 0;
+    padding: 0 16px;
+  }
+  .bank-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--plum);
+    margin-bottom: 10px;
+  }
+  .bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    background: var(--deep);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: default;
+    transition: opacity 0.2s, transform 0.15s;
+    user-select: none;
+  }
+  .chip.used {
+    opacity: 0.28;
+    text-decoration: line-through;
+  }
+
+  /* ── SENTENCES ── */
+  .sentences {
+    max-width: 640px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1.5px solid var(--mist);
+    transition: border-color 0.2s;
+  }
+  .card.correct-card { border-color: var(--correct); background: var(--correct-bg); }
+  .card.wrong-card   { border-color: var(--wrong);   background: var(--wrong-bg); }
+
+  .sentence-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    color: var(--rose);
+    min-width: 22px;
+  }
+  .blank-wrap {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+  }
+  .blank {
+    border: none;
+    border-bottom: 2.5px solid var(--plum);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--deep);
+    width: 170px;
+    padding: 2px 4px;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .blank:focus { border-color: var(--rose); }
+  .blank.correct-input { border-color: var(--correct); color: var(--correct); }
+  .blank.wrong-input   { border-color: var(--wrong);   color: var(--wrong); }
+
+  .feedback-inline {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: none;
+  }
+  .feedback-inline.show { display: block; }
+  .feedback-inline.ok  { color: var(--correct); }
+  .feedback-inline.err { color: var(--wrong); }
+
+  /* ── BUTTONS ── */
+  .actions {
+    max-width: 640px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1;
+    min-width: 130px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s, opacity 0.2s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-check  { background: var(--rose);  color: #fff; }
+  .btn-reset  { background: var(--mist);  color: var(--deep); }
+
+  /* ── SCORE BANNER ── */
+  .score-banner {
+    max-width: 640px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+    display: none;
+  }
+  .score-banner.show { display: block; }
+  .score-inner {
+    background: var(--deep);
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 22px;
+    text-align: center;
+  }
+  .score-inner .big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--blush);
+  }
+  .score-inner p { font-size: 13px; color: #c4b3be; margin-top: 4px; }
+
+  /* ── DECORATIVE HEARTS ── */
+  .hearts {
+    text-align: center;
+    font-size: 22px;
+    padding: 22px 0 0;
+    letter-spacing: 8px;
+    opacity: 0.35;
+  }
+
+  /* ── NAME GATE MODAL ── */
+  .gate-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 24px;
+  }
+  .gate-box {
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 32px 26px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+  }
+  .gate-box h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--deep);
+    margin-bottom: 8px;
+  }
+  .gate-box p {
+    font-size: 13px;
+    color: var(--plum);
+    margin-bottom: 18px;
+  }
+  .gate-box input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--mist);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 14px;
+  }
+  .gate-box input:focus { border-color: var(--rose); }
+  .gate-box button {
+    width: 100%;
+    padding: 13px 20px;
+    border-radius: 10px;
+    border: none;
+    background: var(--rose);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .gate-error {
+    font-size: 12px;
+    color: var(--wrong);
+    margin-top: -8px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .gate-error.show { display: block; }
+  body.gated { overflow: hidden; }
+
+  /* ── COPY RESULTS BUTTON ── */
+  .btn-copy {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1.5px solid var(--blush);
+    background: transparent;
+    color: var(--blush);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-copy.copied { background: var(--blush); color: var(--deep); }
+</style>
+</head>
+<body class="gated">
+
+<!-- NAME GATE -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-box">
+    <h2>Before you start</h2>
+    <p>Enter your name so your teacher can see your results.</p>
+    <input type="text" id="studentNameInput" placeholder="Your full name" autocomplete="off">
+    <div class="gate-error" id="gateError">Please type your name to continue.</div>
+    <button onclick="startExercise()">Start Exercise</button>
+  </div>
+</div>
+
+<!-- HIDDEN RESULTS FORM -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="resultsForm" action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+  <input type="text" name="entry.1106597571" id="entryName">
+  <input type="text" name="entry.26189871" id="entryExercise">
+  <input type="text" name="entry.291802639" id="entryScore">
+  <input type="text" name="entry.1164298030" id="entryTotal">
+  <input type="text" name="entry.818625323" id="entryMistakes">
+</form>
+
+<header>
+  <div class="eyebrow">Love &amp; Relationships · B1 · Group 1</div>
+  <h1>Attraction &amp; <em>First Steps</em></h1>
+  <div class="subtitle">Fill in each blank with the correct expression from the word bank.</div>
+</header>
+
+<div class="hearts">💘 💕 💗</div>
+
+<!-- WORD BANK -->
+<div class="bank-wrap">
+  <div class="bank-label">Word Bank</div>
+  <div class="bank" id="bank">
+    <span class="chip" data-word="like him">like him</span>
+    <span class="chip" data-word="a crush on">a crush on</span>
+    <span class="chip" data-word="into">into</span>
+    <span class="chip" data-word="asked her out">asked her out</span>
+    <span class="chip" data-word="fell for">fell for</span>
+    <span class="chip" data-word="hit it off">hit it off</span>
+  </div>
+</div>
+
+<!-- SENTENCES -->
+<div class="sentences" id="sentences">
+
+  <div class="card" data-answer="like him">
+    <div class="sentence-row">
+      <span class="num">1</span>
+      <span>I think I</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>— I get nervous every time he talks to me.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="a crush on">
+    <div class="sentence-row">
+      <span class="num">2</span>
+      <span>She has</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>the new guy at work, but she hasn't told him yet.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="into">
+    <div class="sentence-row">
+      <span class="num">3</span>
+      <span>Are you</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>him? You keep smiling every time he texts you!</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="asked her out">
+    <div class="sentence-row">
+      <span class="num">4</span>
+      <span>He finally</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>after three months of being just friends.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="fell for">
+    <div class="sentence-row">
+      <span class="num">5</span>
+      <span>She didn't plan it, but she totally</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>her coworker over the summer.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="hit it off">
+    <div class="sentence-row">
+      <span class="num">6</span>
+      <span>We</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>right away — we talked for three hours without stopping.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="actions">
+  <button class="btn btn-check"  onclick="checkAnswers()">Check answers</button>
+  <button class="btn btn-reset"  onclick="resetAll()">Try again</button>
+</div>
+
+<!-- SCORE -->
+<div class="score-banner" id="scoreBanner">
+  <div class="score-inner">
+    <div class="big" id="scoreText"></div>
+    <p id="scoreMsg"></p>
+    <button class="btn-copy" id="copyBtn" onclick="copyResults()">📋 Copy my results</button>
+  </div>
+</div>
+
+<script>
+  const EXERCISE_NAME = 'Relationships - Group 1 - Attraction & First Steps (Gap-Fill)';
+  let studentName = '';
+  let mistakeIndexes = new Set();
+  let alreadySubmitted = false;
+
+  const cards = document.querySelectorAll('.card');
+
+  function startExercise() {
+    const input = document.getElementById('studentNameInput');
+    const error = document.getElementById('gateError');
+    const name  = input.value.trim();
+    if (name === '') {
+      error.classList.add('show');
+      return;
+    }
+    studentName = name;
+    document.getElementById('gateOverlay').style.display = 'none';
+    document.body.classList.remove('gated');
+  }
+
+  function submitResults(score, total, mistakes) {
+    document.getElementById('entryName').value = studentName;
+    document.getElementById('entryExercise').value = EXERCISE_NAME;
+    document.getElementById('entryScore').value = score;
+    document.getElementById('entryTotal').value = total;
+    document.getElementById('entryMistakes').value = mistakes;
+    document.getElementById('resultsForm').submit();
+  }
+
+  function copyResults() {
+    const scoreText = document.getElementById('scoreText').textContent;
+    const text = `Name: ${studentName}\nExercise: ${EXERCISE_NAME}\nScore: ${scoreText}\nMistakes: ${mistakeIndexes.size}`;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copy my results';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  function normalise(str) {
+    return str.trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  function updateChip(answer, used) {
+    const chip = document.querySelector(`.chip[data-word="${answer}"]`);
+    if (chip) chip.classList.toggle('used', used);
+  }
+
+  function checkAnswers() {
+    let correct = 0;
+    cards.forEach((card, idx) => {
+      const answer  = card.dataset.answer;
+      const input   = card.querySelector('.blank');
+      const feedback = card.querySelector('.feedback-inline');
+      const userVal = normalise(input.value);
+
+      if (userVal === '') return; // skip empty
+
+      if (userVal === normalise(answer)) {
+        correct++;
+        input.classList.add('correct-input');
+        input.classList.remove('wrong-input');
+        card.classList.add('correct-card');
+        card.classList.remove('wrong-card');
+        feedback.textContent = '✓ Correct!';
+        feedback.className = 'feedback-inline show ok';
+        updateChip(answer, true);
+      } else {
+        input.classList.add('wrong-input');
+        input.classList.remove('correct-input');
+        card.classList.add('wrong-card');
+        card.classList.remove('correct-card');
+        feedback.textContent = '✗ Not quite — try again!';
+        feedback.className = 'feedback-inline show err';
+        mistakeIndexes.add(idx);
+      }
+    });
+
+    // score if all filled
+    const filled = [...cards].filter(c => c.querySelector('.blank').value.trim() !== '');
+    if (filled.length === cards.length) {
+      const banner  = document.getElementById('scoreBanner');
+      const scoreT  = document.getElementById('scoreText');
+      const scoreM  = document.getElementById('scoreMsg');
+      scoreT.textContent = `${correct} / ${cards.length}`;
+      if (correct === cards.length) {
+        scoreM.textContent = 'Perfect score! Great work! 🎉';
+      } else if (correct >= 4) {
+        scoreM.textContent = 'Almost there — review the ones you missed.';
+      } else {
+        scoreM.textContent = 'Keep practicing — you\'ve got this!';
+      }
+      banner.classList.add('show');
+
+      if (!alreadySubmitted) {
+        alreadySubmitted = true;
+        submitResults(correct, cards.length, mistakeIndexes.size);
+      }
+    }
+  }
+
+  function resetAll() {
+    cards.forEach(card => {
+      const input    = card.querySelector('.blank');
+      const feedback = card.querySelector('.feedback-inline');
+      input.value = '';
+      input.classList.remove('correct-input', 'wrong-input');
+      card.classList.remove('correct-card', 'wrong-card');
+      feedback.className = 'feedback-inline';
+    });
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('used'));
+    document.getElementById('scoreBanner').classList.remove('show');
+    mistakeIndexes = new Set();
+    alreadySubmitted = false;
+  }
+
+  // Allow Enter key to check
+  document.querySelectorAll('.blank').forEach(input => {
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswers(); });
+  });
+
+  document.getElementById('studentNameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startExercise();
+  });
+</script>
+</body>
+</html>
