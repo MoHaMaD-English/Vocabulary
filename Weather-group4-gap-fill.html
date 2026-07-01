@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Vocabulary — Group 4 Gap-Fill</title>
+<style>
+  :root{
+    --sky-900:#0b2b4a;
+    --sky-700:#12406b;
+    --sky-500:#1d5c94;
+    --sky-100:#eaf3fb;
+    --cloud:#f6f9fc;
+    --sun:#e8a33d;
+    --sun-deep:#c97f1f;
+    --rain:#3f8f7a;
+    --error:#c0503f;
+    --ink:#122436;
+    --paper:#ffffff;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Segoe UI",Verdana,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--sky-900) 0%,var(--sky-700) 45%,var(--sky-500) 100%);
+    color:var(--ink);
+    min-height:100vh;
+    padding:24px 14px 60px;
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+  }
+  .card{
+    background:var(--paper);
+    border-radius:18px;
+    padding:28px 24px;
+    box-shadow:0 20px 50px rgba(5,20,40,0.35);
+  }
+  .eyebrow{
+    display:inline-block;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--sky-500);
+    background:var(--sky-100);
+    padding:4px 10px;
+    border-radius:100px;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:1.5rem;
+    line-height:1.25;
+    margin:0 0 6px;
+    color:var(--sky-900);
+  }
+  p.sub{
+    margin:0 0 18px;
+    color:#43586b;
+    font-size:0.95rem;
+    line-height:1.5;
+  }
+  .cloud-divider{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:22px 0 18px;
+    color:var(--sky-500);
+    font-size:0.8rem;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+  .cloud-divider::before,.cloud-divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#d8e6f2;
+  }
+  /* ---------- Name screen ---------- */
+  label{
+    display:block;
+    font-weight:700;
+    font-size:0.9rem;
+    color:var(--sky-900);
+    margin-bottom:6px;
+  }
+  input[type=text]{
+    width:100%;
+    padding:12px 14px;
+    font-size:1rem;
+    border:2px solid #cfe0ee;
+    border-radius:10px;
+    font-family:inherit;
+    color:var(--ink);
+    background:var(--sky-100);
+  }
+  input[type=text]:focus{
+    outline:none;
+    border-color:var(--sky-500);
+    background:#fff;
+  }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-primary{
+    background:var(--sun);
+    color:#2b1a03;
+    font-weight:700;
+    font-size:1rem;
+    padding:13px 22px;
+    border-radius:12px;
+    width:100%;
+    margin-top:18px;
+    transition:transform .12s ease, background .15s ease;
+    box-shadow:0 8px 18px rgba(201,127,31,0.35);
+  }
+  .btn-primary:hover{background:var(--sun-deep);}
+  .btn-primary:active{transform:scale(0.98);}
+  .btn-secondary{
+    background:transparent;
+    border:2px solid var(--sky-500);
+    color:var(--sky-500);
+    font-weight:700;
+    font-size:0.9rem;
+    padding:10px 18px;
+    border-radius:12px;
+    width:100%;
+    margin-top:10px;
+  }
+  .btn-secondary:hover{background:var(--sky-100);}
+  .hidden{display:none !important;}
+  .err-msg{
+    color:var(--error);
+    font-size:0.85rem;
+    margin-top:6px;
+    font-weight:600;
+  }
+
+  /* ---------- Word bank ---------- */
+  .wordbank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:14px;
+    background:var(--sky-100);
+    border-radius:12px;
+    margin-bottom:6px;
+  }
+  .wb-item{
+    background:var(--paper);
+    border:1.5px solid var(--sky-500);
+    color:var(--sky-900);
+    font-weight:600;
+    font-size:0.85rem;
+    padding:6px 12px;
+    border-radius:100px;
+  }
+
+  /* ---------- Story ---------- */
+  .story{
+    font-size:1.02rem;
+    line-height:2.1;
+    color:var(--ink);
+  }
+  .blank-input{
+    width:150px;
+    padding:5px 8px;
+    font-size:0.95rem;
+    font-family:inherit;
+    text-align:center;
+    border:none;
+    border-bottom:2.5px solid var(--sky-500);
+    background:var(--sky-100);
+    border-radius:6px 6px 0 0;
+    color:var(--sky-900);
+    font-weight:700;
+  }
+  .blank-input:focus{
+    outline:none;
+    background:#dcebf7;
+  }
+  .blank-input.correct{
+    border-bottom-color:var(--rain);
+    background:#e5f4ee;
+    color:#1f5c47;
+  }
+  .blank-input.incorrect{
+    border-bottom-color:var(--error);
+    background:#fbeae7;
+    color:#8a3527;
+  }
+
+  /* ---------- Results ---------- */
+  .score-circle{
+    width:132px;
+    height:132px;
+    border-radius:50%;
+    background:var(--sky-100);
+    border:6px solid var(--sun);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    margin:6px auto 18px;
+  }
+  .score-circle .big{
+    font-size:2.1rem;
+    font-weight:800;
+    color:var(--sky-900);
+    line-height:1;
+  }
+  .score-circle .small{
+    font-size:0.72rem;
+    color:#5c7188;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-top:2px;
+  }
+  .review-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  .review-list li{
+    padding:10px 12px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:0.9rem;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:center;
+  }
+  .review-list li.ok{background:#e5f4ee;color:#1f5c47;}
+  .review-list li.no{background:#fbeae7;color:#8a3527;}
+  .review-list .num{font-weight:700; opacity:0.65; margin-right:6px;}
+  .review-list .answer{font-weight:700;}
+  .status-msg{
+    text-align:center;
+    font-size:0.85rem;
+    color:#5c7188;
+    margin-top:14px;
+  }
+  #submitStatus.ok-status{color:#1f7a55;font-weight:700;}
+  footer.credit{
+    text-align:center;
+    color:#cfe0ee;
+    font-size:0.72rem;
+    margin-top:16px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <!-- ===================== SCREEN 1: NAME ===================== -->
+    <div id="screenName">
+      <span class="eyebrow">Weather Vocabulary · Group 4</span>
+      <h1>Forecast Language — Story Gap-Fill</h1>
+      <p class="sub">A short story about checking the weather before a normal workday. Read it, then fill in each blank with the correct expression from the word bank.</p>
+
+      <label for="studentName">What's your name?</label>
+      <input type="text" id="studentName" placeholder="Type your name here" autocomplete="off">
+      <div class="err-msg hidden" id="nameError">Please type your name to start.</div>
+
+      <button class="btn-primary" id="startBtn">Start Exercise</button>
+    </div>
+
+    <!-- ===================== SCREEN 2: EXERCISE ===================== -->
+    <div id="screenExercise" class="hidden">
+      <span class="eyebrow">Group 4 · Forecast Language</span>
+      <h1>Checking the Forecast</h1>
+      <p class="sub">Fill in each blank with an expression from the box below. Each expression is used only once. Type it exactly as it appears, then tap "Check My Answers."</p>
+
+      <div class="cloud-divider">Word Bank</div>
+      <div class="wordbank" id="wordBank"></div>
+
+      <div class="cloud-divider">The Story</div>
+      <p class="story" id="storyText"></p>
+
+      <button class="btn-primary" id="checkBtn">Check My Answers</button>
+      <div class="err-msg hidden" id="fillError">Please fill in every blank before checking.</div>
+    </div>
+
+    <!-- ===================== SCREEN 3: RESULTS ===================== -->
+    <div id="screenResults" class="hidden">
+      <span class="eyebrow">Results</span>
+      <h1 id="resultsHeading">Nice work!</h1>
+      <p class="sub" id="resultsSub"></p>
+
+      <div class="score-circle">
+        <div class="big" id="scoreBig">0/7</div>
+        <div class="small">Correct</div>
+      </div>
+
+      <div class="cloud-divider">Answer Review</div>
+      <ul class="review-list" id="reviewList"></ul>
+
+      <button class="btn-secondary" id="copyBtn">Copy My Results</button>
+      <div class="status-msg" id="submitStatus">Sending your results to your teacher…</div>
+    </div>
+
+  </div>
+  <footer class="credit">Weather Vocabulary · Group 4 · B1 American English</footer>
+</div>
+
+<!-- Hidden iframe target so the Google Form submits silently -->
+<iframe name="hiddenSubmitFrame" style="display:none;"></iframe>
+
+<!-- Hidden Google Form, submitted programmatically -->
+<form id="gForm"
+  action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse"
+  method="POST" target="hiddenSubmitFrame" style="display:none;">
+  <input type="text" name="entry.1106597571" id="fName">
+  <input type="text" name="entry.26189871" id="fExercise">
+  <input type="text" name="entry.291802639" id="fScore">
+  <input type="text" name="entry.1164298030" id="fTotal">
+  <input type="text" name="entry.818625323" id="fMistakes">
+</form>
+
+<script>
+(function(){
+  const EXERCISE_NAME = "Weather Group 4 - Story Gap-Fill";
+
+  // Correct answers in blank order (1-7). An array means multiple forms are accepted.
+  const answers = [
+    "check the weather",
+    "weather forecast",
+    "partly cloudy",
+    "chance of rain",
+    ["a high of","a low of"],
+    "feels like",
+    "scattered showers"
+  ];
+
+  // Word bank shown to student (built from unique display labels, alphabetized)
+  const bankLabels = [
+    "check the weather","weather forecast","partly cloudy","chance of rain",
+    "a high of / a low of","feels like","scattered showers"
+  ].sort();
+
+  const storyParts = [
+    "Every morning before I leave for work, I like to ",
+    " so I know what to expect for the day. According to the ",
+    ", today will be ",
+    ", with a nice mix of sun and clouds. There's also a 40% ",
+    " this afternoon, so I'm bringing my umbrella just in case. Forecasters say we're expecting ",
+    " 78 degrees today, though with the humidity it actually ",
+    " 85. My coworker mentioned that ",
+    " are expected tonight, moving through different parts of the city at different times."
+  ];
+
+  let studentName = "";
+
+  // ---- Build word bank ----
+  const wbEl = document.getElementById('wordBank');
+  bankLabels.forEach(w=>{
+    const span = document.createElement('span');
+    span.className = 'wb-item';
+    span.textContent = w;
+    wbEl.appendChild(span);
+  });
+
+  // ---- Build story with inputs ----
+  const storyEl = document.getElementById('storyText');
+  storyEl.innerHTML = "";
+  storyParts.forEach((chunk, i)=>{
+    storyEl.appendChild(document.createTextNode(chunk));
+    if(i < answers.length){
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'blank-input';
+      inp.setAttribute('data-index', i);
+      inp.setAttribute('autocomplete','off');
+      inp.setAttribute('aria-label', 'Blank ' + (i+1));
+      storyEl.appendChild(inp);
+    }
+  });
+
+  // ---- Screen navigation ----
+  const screenName = document.getElementById('screenName');
+  const screenExercise = document.getElementById('screenExercise');
+  const screenResults = document.getElementById('screenResults');
+
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    const nameInput = document.getElementById('studentName');
+    const val = nameInput.value.trim();
+    const err = document.getElementById('nameError');
+    if(!val){
+      err.classList.remove('hidden');
+      return;
+    }
+    err.classList.add('hidden');
+    studentName = val;
+    screenName.classList.add('hidden');
+    screenExercise.classList.remove('hidden');
+    window.scrollTo(0,0);
+  });
+
+  document.getElementById('checkBtn').addEventListener('click', ()=>{
+    const inputs = document.querySelectorAll('.blank-input');
+    let allFilled = true;
+    inputs.forEach(inp=>{ if(!inp.value.trim()) allFilled = false; });
+
+    const fillErr = document.getElementById('fillError');
+    if(!allFilled){
+      fillErr.classList.remove('hidden');
+      return;
+    }
+    fillErr.classList.add('hidden');
+
+    let correctCount = 0;
+    const mistakes = [];
+    const reviewList = document.getElementById('reviewList');
+    reviewList.innerHTML = "";
+
+    inputs.forEach(inp=>{
+      const idx = parseInt(inp.getAttribute('data-index'),10);
+      const correctEntry = answers[idx];
+      const acceptable = Array.isArray(correctEntry) ? correctEntry : [correctEntry];
+      const displayAnswer = Array.isArray(correctEntry) ? correctEntry.join(" / ") : correctEntry;
+      const studentAnswer = inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+      const isCorrect = acceptable.some(a => a.toLowerCase() === studentAnswer);
+
+      inp.classList.remove('correct','incorrect');
+      inp.classList.add(isCorrect ? 'correct' : 'incorrect');
+      inp.disabled = true;
+
+      const li = document.createElement('li');
+      li.className = isCorrect ? 'ok' : 'no';
+      const label = document.createElement('span');
+      label.innerHTML = '<span class="num">' + (idx+1) + '.</span>' + (isCorrect ? 'Correct!' : 'You wrote "' + (inp.value.trim() || '—') + '"');
+      const answerSpan = document.createElement('span');
+      answerSpan.className = 'answer';
+      answerSpan.textContent = isCorrect ? '✓ ' + displayAnswer : '→ ' + displayAnswer;
+      li.appendChild(label);
+      li.appendChild(answerSpan);
+      reviewList.appendChild(li);
+
+      if(isCorrect){
+        correctCount++;
+      } else {
+        mistakes.push(displayAnswer + " (wrote: " + (inp.value.trim() || "blank") + ")");
+      }
+    });
+
+    document.getElementById('scoreBig').textContent = correctCount + "/" + answers.length;
+    const heading = document.getElementById('resultsHeading');
+    const sub = document.getElementById('resultsSub');
+    if(correctCount === answers.length){
+      heading.textContent = "Perfect score, " + studentName + "!";
+      sub.textContent = "You got every forecast expression right. Great job!";
+    } else if(correctCount >= 5){
+      heading.textContent = "Nice work, " + studentName + "!";
+      sub.textContent = "You're doing well with forecast language. Check the review below.";
+    } else {
+      heading.textContent = "Good try, " + studentName + "!";
+      sub.textContent = "Take a look at the expressions you missed, and try the practice again soon.";
+    }
+
+    submitResults(studentName, correctCount, answers.length, mistakes);
+
+    screenExercise.classList.add('hidden');
+    screenResults.classList.remove('hidden');
+    window.scrollTo(0,0);
+  });
+
+  // ---- Submit to Google Form (silent, via hidden iframe) ----
+  function submitResults(name, score, total, mistakes){
+    document.getElementById('fName').value = name;
+    document.getElementById('fExercise').value = EXERCISE_NAME;
+    document.getElementById('fScore').value = score;
+    document.getElementById('fTotal').value = total;
+    document.getElementById('fMistakes').value = mistakes.length ? mistakes.join("; ") : "None";
+
+    const statusEl = document.getElementById('submitStatus');
+    try{
+      document.getElementById('gForm').submit();
+      setTimeout(()=>{
+        statusEl.textContent = "✓ Results sent to your teacher.";
+        statusEl.classList.add('ok-status');
+      }, 900);
+    } catch(e){
+      statusEl.textContent = "Results couldn't be sent automatically. Please use \"Copy My Results\" and send them manually.";
+    }
+  }
+
+  // ---- Copy results backup button ----
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    const score = document.getElementById('scoreBig').textContent;
+    const mistakesArr = [];
+    document.querySelectorAll('#reviewList li.no .answer').forEach(el=>{
+      mistakesArr.push(el.textContent.replace('→ ','').trim());
+    });
+    const text = "Name: " + studentName +
+      "\\nExercise: " + EXERCISE_NAME +
+      "\\nScore: " + score +
+      "\\nMistakes: " + (mistakesArr.length ? mistakesArr.join(", ") : "None");
+
+    const btn = document.getElementById('copyBtn');
+    const originalText = btn.textContent;
+
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>{
+        btn.textContent = "Copied!";
+        setTimeout(()=>{ btn.textContent = originalText; }, 1800);
+      }).catch(()=>{ fallbackCopy(text, btn, originalText); });
+    } else {
+      fallbackCopy(text, btn, originalText);
+    }
+  });
+
+  function fallbackCopy(text, btn, originalText){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand('copy'); btn.textContent = "Copied!"; }
+    catch(e){ btn.textContent = "Copy failed — select manually"; }
+    document.body.removeChild(ta);
+    setTimeout(()=>{ btn.textContent = originalText; }, 1800);
+  }
+})();
+</script>
+</body>
+</html>
