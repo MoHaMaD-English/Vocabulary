@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Money Vocabulary — Gap-fill Practice (B1)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; }
+
+  header { background: #1a5f3f; color: #fff; padding: 22px 24px 18px; }
+  header h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  header p { font-size: 13px; opacity: 0.75; }
+
+  .progress-bar-wrap { background: rgba(255,255,255,0.2); border-radius: 4px; height: 4px; margin-top: 14px; overflow: hidden; }
+  .progress-bar { background: #5ee8a0; height: 100%; border-radius: 4px; transition: width 0.4s ease; width: 0%; }
+
+  .main { max-width: 680px; margin: 0 auto; padding: 24px 16px 40px; }
+
+  /* Name gate */
+  .name-gate { background: #fff; border-radius: 12px; border: 1px solid #dde3ec; padding: 28px 24px; text-align: center; margin-top: 20px; }
+  .name-gate h2 { font-size: 17px; color: #1c2533; margin-bottom: 6px; }
+  .name-gate p { font-size: 13px; color: #6b7a8d; margin-bottom: 18px; }
+  .name-input { width: 100%; max-width: 320px; padding: 11px 14px; border: 1.5px solid #c5d4e8; border-radius: 8px; font-size: 15px; font-family: inherit; margin-bottom: 14px; outline: none; }
+  .name-input:focus { border-color: #1a5f3f; }
+  .start-btn { padding: 11px 28px; border-radius: 8px; background: #1a5f3f; color: #fff; border: none; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .start-btn:hover { background: #155233; }
+  .start-btn:disabled { background: #a0c0ae; cursor: not-allowed; }
+
+  .exercise-area { display: none; }
+  .exercise-area.show { display: block; }
+
+  .bank-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7a8d; margin-bottom: 10px; }
+  .word-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; padding: 14px; background: #fff; border-radius: 10px; border: 1px solid #dde3ec; }
+  .chip { padding: 7px 15px; border-radius: 20px; background: #e8f5ee; color: #1a5f3f; font-size: 14px; font-weight: 500; cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s; user-select: none; }
+  .chip:hover { border-color: #1a5f3f; }
+  .chip.selected { background: #1a5f3f; color: #fff; border-color: #1a5f3f; }
+  .chip.used { background: #f0f0f0; color: #b0b8c4; pointer-events: none; border-color: transparent; }
+
+  .section-title { font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #6b7a8d; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 1px solid #dde3ec; }
+  .exercise-block { background: #fff; border-radius: 10px; border: 1px solid #dde3ec; padding: 16px 18px; margin-bottom: 12px; }
+  .sentence-row { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .sentence-num { font-size: 12px; font-weight: 700; color: #1a5f3f; min-width: 20px; padding-top: 3px; }
+  .sentence-text { font-size: 16px; line-height: 1.7; color: #1c2533; flex: 1; min-width: 200px; }
+  .blank-slot { display: inline-flex; align-items: center; justify-content: center; min-width: 120px; height: 30px; border: none; border-bottom: 2.5px solid #1a5f3f; background: transparent; cursor: pointer; font-size: 15px; font-weight: 500; color: #1a5f3f; padding: 0 6px; transition: all 0.15s; vertical-align: middle; margin: 0 2px; }
+  .blank-slot:hover { background: #e8f5ee; }
+  .blank-slot.correct { border-bottom-color: #1a9e60; color: #1a9e60; background: #e8f5ee; border-radius: 4px; }
+  .blank-slot.wrong { border-bottom-color: #c0392b; color: #c0392b; background: #fdf0ee; border-radius: 4px; }
+  .blank-slot.empty-error { border-bottom-color: #e67e22; }
+
+  .actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+  .btn { padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; }
+  .btn-primary { background: #1a5f3f; color: #fff; }
+  .btn-primary:hover { background: #155233; }
+  .btn-primary:disabled { background: #a0c0ae; cursor: not-allowed; }
+  .btn-secondary { background: #fff; color: #1a5f3f; border: 1.5px solid #1a5f3f; }
+  .btn-secondary:hover { background: #e8f5ee; }
+
+  .score-box { display: none; margin-top: 20px; padding: 18px 20px; border-radius: 10px; font-size: 15px; font-weight: 500; }
+  .score-box.show { display: block; }
+  .score-box.perfect { background: #e8f5ee; color: #1a5f3f; border: 1.5px solid #a0dbb8; }
+  .score-box.good { background: #fef9e7; color: #8a6000; border: 1.5px solid #f7dc6f; }
+  .score-box.tryagain { background: #fdf0ee; color: #922b21; border: 1.5px solid #f1948a; }
+  .score-detail { font-size: 13px; font-weight: 400; margin-top: 4px; opacity: 0.85; }
+
+  .sync-status { font-size: 12px; margin-top: 14px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .sync-status.show { display: block; }
+  .sync-status.sending { background: #fef9e7; color: #8a6000; }
+  .sync-status.sent { background: #e8f5ee; color: #1a5f3f; }
+  .sync-status.failed { background: #fdf0ee; color: #922b21; }
+
+  .copy-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .copy-box { background: #f7f9fc; border: 1px dashed #c5d4e8; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #4a5f7a; font-family: monospace; line-height: 1.6; white-space: pre-wrap; margin-top: 10px; display: none; }
+  .copy-box.show { display: block; }
+
+  .instructions { font-size: 13px; color: #6b7a8d; margin-bottom: 20px; padding: 10px 14px; background: #f7f9fc; border-radius: 8px; border-left: 3px solid #1a5f3f; line-height: 1.6; }
+
+  @media (max-width: 480px) {
+    .sentence-text { font-size: 15px; }
+    .blank-slot { min-width: 100px; font-size: 14px; }
+    header h1 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Money Vocabulary — Gap-fill Practice</h1>
+  <p>B1 Level · 8 items · Results are saved for your teacher</p>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+</header>
+
+<div class="main">
+
+  <!-- NAME GATE -->
+  <div class="name-gate" id="name-gate">
+    <h2>Before you start</h2>
+    <p>Enter your name so your teacher can see your results.</p>
+    <input class="name-input" id="student-name" placeholder="Your full name" />
+    <br>
+    <button class="start-btn" onclick="startExercise()">Start exercise</button>
+  </div>
+
+  <!-- EXERCISE -->
+  <div class="exercise-area" id="exercise-area">
+
+    <p class="instructions"><strong>How to answer:</strong> Tap a word from the box below to select it (it turns green), then tap the blank where it belongs. To change an answer, tap the blank again.</p>
+
+    <p class="bank-label">Word bank</p>
+    <div class="word-bank" id="word-bank"></div>
+
+    <p class="section-title">Part A — Everyday situations</p>
+
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">1</span>
+        <span class="sentence-text">I really want those shoes, but I <span class="blank-slot" id="b1" onclick="fillBlank('b1')">tap to fill</span> them — they cost £200!</span>
+      </div>
+    </div>
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">2</span>
+        <span class="sentence-text">We decided to <span class="blank-slot" id="b2" onclick="fillBlank('b2')">tap to fill</span> at the restaurant, so everyone paid for their own meal.</span>
+      </div>
+    </div>
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">3</span>
+        <span class="sentence-text">She is trying to <span class="blank-slot" id="b3" onclick="fillBlank('b3')">tap to fill</span> to buy a new laptop for university.</span>
+      </div>
+    </div>
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">4</span>
+        <span class="sentence-text">We <span class="blank-slot" id="b4" onclick="fillBlank('b4')">tap to fill</span> before the end of the month and had to borrow from a friend.</span>
+      </div>
+    </div>
+
+    <p class="section-title" style="margin-top:24px;">Part B — Money problems and habits</p>
+
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">5</span>
+        <span class="sentence-text">He borrowed £500 from his parents and promised to <span class="blank-slot" id="b5" onclick="fillBlank('b5')">tap to fill</span> every penny.</span>
+      </div>
+    </div>
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">6</span>
+        <span class="sentence-text">After losing his job, he had to <span class="blank-slot" id="b6" onclick="fillBlank('b6')">tap to fill</span> to pay his rent.</span>
+      </div>
+    </div>
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">7</span>
+        <span class="sentence-text">We are <span class="blank-slot" id="b7" onclick="fillBlank('b7')">tap to fill</span> this holiday, so we are cooking at home every night.</span>
+      </div>
+    </div>
+    <div class="exercise-block">
+      <div class="sentence-row"><span class="sentence-num">8</span>
+        <span class="sentence-text">Buying a gym membership you never use is <span class="blank-slot" id="b8" onclick="fillBlank('b8')">tap to fill</span>.</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="check-btn" onclick="checkAnswers()">Check answers</button>
+      <button class="btn btn-secondary" onclick="resetAll()">Start again</button>
+    </div>
+
+    <div class="score-box" id="score-box">
+      <div id="score-text"></div>
+      <div class="score-detail" id="score-detail"></div>
+      <div class="sync-status" id="sync-status"></div>
+      <div class="copy-row" id="copy-row" style="display:none;">
+        <button class="btn btn-secondary" onclick="copyResults()">Copy my results</button>
+      </div>
+      <div class="copy-box" id="copy-box"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Google Form connection ──
+const FORM_ID = "1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w";
+const FORM_ACTION = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
+const ENTRY_NAME = "entry.1106597571";
+const ENTRY_EXERCISE = "entry.26189871";
+const ENTRY_SCORE = "entry.291802639";
+const ENTRY_TOTAL = "entry.1164298030";
+const ENTRY_WRONG = "entry.818625323";
+const EXERCISE_NAME = "Money Vocabulary — Gap-fill (B1)";
+
+const answers = {
+  b1: "can't afford", b2: "split the bill", b3: "save up", b4: "ran out of money",
+  b5: "pay back", b6: "go into debt", b7: "on a budget", b8: "a waste of money"
+};
+const words = Object.values(answers);
+
+let selected = null;
+let filled = {};
+let studentName = "";
+let lastResult = null;
+
+function startExercise() {
+  const name = document.getElementById('student-name').value.trim();
+  if (!name) { document.getElementById('student-name').focus(); return; }
+  studentName = name;
+  document.getElementById('name-gate').style.display = 'none';
+  document.getElementById('exercise-area').classList.add('show');
+  buildBank();
+}
+
+function buildBank() {
+  const bank = document.getElementById('word-bank');
+  bank.innerHTML = words.map((w, i) => `<div class="chip" id="chip-${i}" data-word="${escapeAttr(w)}" onclick="selectWord(${i})">${w}</div>`).join('');
+}
+
+function escapeAttr(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML.replace(/"/g, '&quot;');
+}
+
+function findChipByWord(w) {
+  for (let c of document.querySelectorAll('.chip')) if (c.dataset.word === w) return c;
+  return null;
+}
+
+function selectWord(i) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  const chip = document.getElementById('chip-' + i);
+  const w = words[i];
+  if (chip && !chip.classList.contains('used')) { chip.classList.add('selected'); selected = w; }
+}
+
+function fillBlank(id) {
+  const slot = document.getElementById(id);
+  if (!selected) return;
+  if (filled[id]) { const old = findChipByWord(filled[id]); if (old) old.classList.remove('used'); }
+  filled[id] = selected;
+  slot.textContent = selected;
+  slot.classList.remove('correct','wrong','empty-error');
+  const chip = findChipByWord(selected);
+  if (chip) { chip.classList.remove('selected'); chip.classList.add('used'); }
+  selected = null;
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = Object.keys(answers).length;
+  const done = Object.keys(filled).length;
+  document.getElementById('progress-bar').style.width = (done/total*100) + '%';
+}
+
+async function checkAnswers() {
+  let correct = 0;
+  const total = Object.keys(answers).length;
+  let unanswered = 0;
+  const wrongList = [];
+
+  Object.entries(answers).forEach(([id, ans]) => {
+    const slot = document.getElementById(id);
+    if (!filled[id]) { slot.classList.add('empty-error'); unanswered++; }
+    else if (filled[id] === ans) { slot.classList.add('correct'); slot.classList.remove('wrong'); correct++; }
+    else { slot.classList.add('wrong'); slot.classList.remove('correct'); wrongList.push(`#${id.slice(1)}: wrote "${filled[id]}", correct is "${ans}"`); }
+  });
+
+  const box = document.getElementById('score-box');
+  const txt = document.getElementById('score-text');
+  const det = document.getElementById('score-detail');
+  box.classList.add('show');
+  box.className = 'score-box show';
+
+  if (unanswered > 0) {
+    box.classList.add('tryagain');
+    txt.textContent = `${unanswered} blank${unanswered>1?'s':''} still empty`;
+    det.textContent = 'Fill in all the blanks before checking.';
+    return;
+  }
+
+  if (correct === total) { box.classList.add('perfect'); txt.textContent = '✓ Perfect score — ' + correct + ' out of ' + total + '!'; det.textContent = 'Excellent work.'; }
+  else if (correct >= total*0.6) { box.classList.add('good'); txt.textContent = correct + ' out of ' + total + ' correct'; det.textContent = 'Good effort! Review the red ones.'; }
+  else { box.classList.add('tryagain'); txt.textContent = correct + ' out of ' + total + ' correct'; det.textContent = 'Keep practising.'; }
+
+  document.getElementById('check-btn').disabled = true;
+
+  lastResult = { name: studentName, exercise: EXERCISE_NAME, score: correct, total, wrong: wrongList, date: new Date().toLocaleString() };
+
+  document.getElementById('copy-row').style.display = 'flex';
+  await sendToGoogleForm(correct, total, wrongList);
+}
+
+async function sendToGoogleForm(score, total, wrongList) {
+  const statusEl = document.getElementById('sync-status');
+  statusEl.className = 'sync-status show sending';
+  statusEl.textContent = 'Saving your result...';
+
+  try {
+    const formData = new URLSearchParams();
+    formData.append(ENTRY_NAME, studentName);
+    formData.append(ENTRY_EXERCISE, EXERCISE_NAME);
+    formData.append(ENTRY_SCORE, String(score));
+    formData.append(ENTRY_TOTAL, String(total));
+    formData.append(ENTRY_WRONG, wrongList.join('; ') || 'None');
+
+    // Google Forms blocks reading the response (no-cors), so we submit via a hidden iframe
+    // and assume success after a short delay, since there's no way to read the result.
+    let iframe = document.getElementById('hidden-form-frame');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.name = 'hidden-form-frame';
+      iframe.id = 'hidden-form-frame';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+    }
+
+    let form = document.createElement('form');
+    form.action = FORM_ACTION;
+    form.method = 'POST';
+    form.target = 'hidden-form-frame';
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    statusEl.className = 'sync-status show sent';
+    statusEl.textContent = '✓ Saved — your teacher can see this result.';
+  } catch (e) {
+    statusEl.className = 'sync-status show failed';
+    statusEl.textContent = 'Could not save automatically. Please use "Copy my results" and send it to your teacher.';
+  }
+}
+
+function copyResults() {
+  if (!lastResult) return;
+  const text = `Student: ${lastResult.name}\nExercise: ${lastResult.exercise}\nScore: ${lastResult.score}/${lastResult.total}\nDate: ${lastResult.date}\nWrong: ${lastResult.wrong.length ? lastResult.wrong.join(' | ') : 'None'}`;
+  const box = document.getElementById('copy-box');
+  box.textContent = text;
+  box.classList.add('show');
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  }
+}
+
+function resetAll() {
+  filled = {}; selected = null;
+  Object.keys(answers).forEach(id => {
+    const slot = document.getElementById(id);
+    slot.textContent = 'tap to fill';
+    slot.className = 'blank-slot';
+  });
+  buildBank();
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('score-box').className = 'score-box';
+  document.getElementById('check-btn').disabled = false;
+  document.getElementById('copy-row').style.display = 'none';
+  document.getElementById('copy-box').classList.remove('show');
+  document.getElementById('sync-status').className = 'sync-status';
+}
+</script>
+</body>
+</html>
