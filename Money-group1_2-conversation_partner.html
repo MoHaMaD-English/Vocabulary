@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat Practice · Money</title>
+<title>Chat Practice · Money 1+2</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
@@ -32,7 +32,6 @@
     flex-direction: column;
   }
 
-  /* ── HEADER ── */
   header {
     background: var(--deep);
     padding: 20px 20px 16px;
@@ -56,7 +55,6 @@
   }
   .header-sub { font-size: 12px; color: #b7c9bd; margin-top: 2px; }
 
-  /* ── WORD TARGETS ── */
   .targets-bar {
     background: var(--deep);
     padding: 0 20px 14px;
@@ -79,7 +77,6 @@
     color: #fff; text-decoration: line-through;
   }
 
-  /* ── CHAT AREA ── */
   .chat {
     flex: 1;
     overflow-y: auto;
@@ -110,7 +107,6 @@
   .msg.ai  .bubble { background: var(--bubble-ai); border-bottom-left-radius: 4px; color: var(--deep); }
   .msg.you .bubble { background: var(--bubble-you); border-bottom-right-radius: 4px; color: #fff; }
 
-  /* feedback under student bubble */
   .feedback-box {
     margin-top: 6px;
     padding: 9px 13px;
@@ -123,10 +119,8 @@
   .feedback-box.ok   { background: #E3F1E9; color: var(--correct); }
   .feedback-box.warn { background: var(--warn-bg); color: var(--warn); }
 
-  /* highlighted target words in feedback */
   .hw { font-weight: 700; background: #d4edda; padding: 1px 4px; border-radius: 4px; color: var(--correct); }
 
-  /* typing indicator */
   .typing-indicator { display: none; align-items: center; gap: 5px; padding: 10px 15px; }
   .typing-indicator.show { display: flex; }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--forest); opacity: 0.4;
@@ -135,7 +129,6 @@
   .dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px); opacity:1} }
 
-  /* ── INPUT AREA ── */
   .input-area {
     background: #fff;
     border-top: 1.5px solid var(--mist);
@@ -175,7 +168,6 @@
   .send-btn:active { transform: scale(0.93); }
   .send-btn:disabled { background: var(--mist); color: #b3a894; cursor: default; }
 
-  /* ── SCORE SCREEN ── */
   .score-screen {
     display: none;
     position: fixed; inset: 0;
@@ -210,7 +202,6 @@
     .msg { max-width: 95%; }
   }
 
-  /* ── NAME GATE ── */
   .gate-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85);
     display: flex; align-items: center; justify-content: center;
@@ -236,7 +227,6 @@
   .gate-error { font-size: 12px; color: #B03A3A; margin-top: -8px; margin-bottom: 12px; display: none; }
   .gate-error.show { display: block; }
   body.gated { overflow: hidden; }
-  /* ── COPY BUTTON ── */
   .btn-copy {
     margin-top: 10px; padding: 12px 20px; border-radius: 10px;
     border: 1.5px solid rgba(255,255,255,0.35); background: transparent;
@@ -249,7 +239,6 @@
 </head>
 <body class="gated">
 
-<!-- NAME GATE -->
 <div class="gate-overlay" id="gateOverlay">
   <div class="gate-box">
     <h2>Before you start</h2>
@@ -260,7 +249,6 @@
   </div>
 </div>
 
-<!-- HIDDEN RESULTS FORM -->
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 <form id="resultsForm" action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse" method="POST" target="hidden_iframe" style="display:none;">
   <input type="text" name="entry.1106597571" id="entryName">
@@ -270,46 +258,45 @@
   <input type="text" name="entry.818625323"  id="entryMistakes">
 </form>
 
-<!-- HEADER -->
 <header>
-  <div class="avatar">🧑‍💼</div>
+  <div class="avatar">🧑</div>
   <div class="header-text">
-    <div class="header-name">Jordan</div>
+    <div class="header-name">Riley</div>
     <div class="header-sub">Your friend · B1 Conversation Practice</div>
   </div>
 </header>
 
-<!-- TARGET WORDS BAR -->
 <div class="targets-bar">
   <div class="targets-label">Use these words ↓</div>
   <div class="targets" id="targets">
     <span class="target-chip" data-word="earn">earn</span>
     <span class="target-chip" data-word="salary">salary</span>
     <span class="target-chip" data-word="income">income</span>
+    <span class="target-chip" data-word="passive income">passive income</span>
     <span class="target-chip" data-word="make a profit">make a profit</span>
     <span class="target-chip" data-word="spend">spend</span>
+    <span class="target-chip" data-word="expense">expense</span>
+    <span class="target-chip" data-word="bill">bill</span>
+    <span class="target-chip" data-word="fee">fee</span>
     <span class="target-chip" data-word="afford">afford</span>
     <span class="target-chip" data-word="cost of living">cost of living</span>
   </div>
 </div>
 
-<!-- CHAT -->
 <div class="chat" id="chat">
   <div class="msg ai">
-    <div class="msg-avatar">🧑‍💼</div>
+    <div class="msg-avatar">🧑</div>
     <div>
-      <div class="bubble">Hey! Long time no chat. So, how's work going lately — are you still doing the same job, or did something change?</div>
+      <div class="bubble">Hey! It's been way too long. So, what's new with you — still at the same job, or did you switch things up?</div>
     </div>
   </div>
 </div>
 
-<!-- INPUT -->
 <div class="input-area">
   <textarea id="userInput" rows="1" placeholder="Type your reply..."></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
 </div>
 
-<!-- SCORE SCREEN -->
 <div class="score-screen" id="scoreScreen">
   <div class="big" id="scoreBig"></div>
   <h2>Nice work! 💰</h2>
@@ -320,7 +307,6 @@
 </div>
 
 <script>
-  // ── TRACKING ──
   let studentName = '';
 
   function startExercise() {
@@ -359,13 +345,16 @@
     });
   });
 
-// Target words shown in the chip bar
 const TARGET_WORDS = [
   "earn",
   "salary",
   "income",
+  "passive income",
   "make a profit",
   "spend",
+  "expense",
+  "bill",
+  "fee",
   "afford",
   "cost of living"
 ];
@@ -376,18 +365,15 @@ let usedWords = new Set();
 let turnCount = 0;
 let isWaiting = false;
 
-// ── SCRIPTED CONVERSATION (no live API — works standalone on GitHub Pages) ──
-// Jordan's replies are pre-written and move the conversation forward turn by
-// turn, regardless of the exact words the student types. Vocabulary tracking
-// and feedback (below) still respond directly to what the student writes.
+// SCRIPTED conversation — no live API call, so this works standalone on GitHub Pages.
 const SCRIPTED_REPLIES = [
-  "Oh nice! Is it a fixed salary, or does your pay change depending on how much you work?",
-  "Got it. Would you say your income covers everything pretty comfortably, or is it tight some months?",
-  "Have you ever tried selling stuff online or doing a side gig? Did you actually make a profit, or did it just about break even?",
-  "Okay, switching gears a little — what do you usually spend the most money on each month?",
-  "Is there something expensive you'd love to buy but honestly can't afford right now?",
-  "Totally get that. Has the cost of living gone up a lot where you live lately?",
-  "Yeah, it's rough everywhere it seems. Anyway, I should get going, but it was so good catching up about money stuff with you! Talk soon!"
+  "Oh nice, so how's the pay? Is it a steady salary, or does what you earn change month to month?",
+  "Got it. Is your income enough to live comfortably, or is money kind of tight some months?",
+  "That's cool \u2014 have you ever tried a side hustle for some passive income, or maybe sold something and made a profit?",
+  "Nice! Okay, switching topics \u2014 what do you usually spend the most on each month? Rent, food, something else?",
+  "Ha, that's real. Is there one expense or bill that always seems way higher than you expect?",
+  "Ugh I feel that. Is there anything you really want but honestly can't afford right now, with the cost of living being what it is?",
+  "Tell me about it. Anyway, I really have to run, but this was so good catching up about money stuff \u2014 let's do this again soon!"
 ];
 
 function detectTargetWords(text) {
@@ -395,9 +381,13 @@ function detectTargetWords(text) {
   const found = [];
   if (/\bearn(s|ed|ing)?\b/.test(lower) && !usedWords.has("earn")) { found.push("earn"); usedWords.add("earn"); }
   if (/\bsalary\b/.test(lower) && !usedWords.has("salary")) { found.push("salary"); usedWords.add("salary"); }
-  if (/\bincome\b/.test(lower) && !usedWords.has("income")) { found.push("income"); usedWords.add("income"); }
+  if (/\bpassive income\b/.test(lower) && !usedWords.has("passive income")) { found.push("passive income"); usedWords.add("passive income"); }
+  if (/(?<!passive )\bincome\b/.test(lower) && !usedWords.has("income")) { found.push("income"); usedWords.add("income"); }
   if (/\b(made|make|making)\s+a\s+profit\b/.test(lower) && !usedWords.has("make a profit")) { found.push("make a profit"); usedWords.add("make a profit"); }
   if (/\bspen(d|t|ds|ding)\b/.test(lower) && !usedWords.has("spend")) { found.push("spend"); usedWords.add("spend"); }
+  if (/\bexpense(s)?\b/.test(lower) && !usedWords.has("expense")) { found.push("expense"); usedWords.add("expense"); }
+  if (/\bbill(s)?\b/.test(lower) && !usedWords.has("bill")) { found.push("bill"); usedWords.add("bill"); }
+  if (/\bfee(s)?\b/.test(lower) && !usedWords.has("fee")) { found.push("fee"); usedWords.add("fee"); }
   if (/\bafford(s|ed|ing)?\b/.test(lower) && !usedWords.has("afford")) { found.push("afford"); usedWords.add("afford"); }
   if (/\bcost of living\b/.test(lower) && !usedWords.has("cost of living")) { found.push("cost of living"); usedWords.add("cost of living"); }
   return found;
@@ -426,28 +416,22 @@ function buildFeedback(foundWords) {
 
 function appendMessage(role, text, feedback) {
   const chat = document.getElementById('chat');
-
   const msg = document.createElement('div');
   msg.className = `msg ${role}`;
-
   const avatarEl = document.createElement('div');
   avatarEl.className = 'msg-avatar';
-  avatarEl.textContent = role === 'ai' ? '🧑‍💼' : '🧑';
-
+  avatarEl.textContent = role === 'ai' ? '🧑' : '🧑';
   const inner = document.createElement('div');
-
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.textContent = text;
   inner.appendChild(bubble);
-
   if (feedback && role === 'you') {
     const fb = document.createElement('div');
     fb.className = `feedback-box show ${feedback.type}`;
     fb.innerHTML = feedback.text;
     inner.appendChild(fb);
   }
-
   msg.appendChild(avatarEl);
   msg.appendChild(inner);
   chat.appendChild(msg);
@@ -459,7 +443,7 @@ function showTyping() {
   const t = document.createElement('div');
   t.className = 'msg ai';
   t.id = 'typing';
-  t.innerHTML = `<div class="msg-avatar">🧑‍💼</div><div class="bubble" style="padding:10px 15px"><div class="typing-indicator show"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  t.innerHTML = `<div class="msg-avatar">🧑</div><div class="bubble" style="padding:10px 15px"><div class="typing-indicator show"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
   chat.appendChild(t);
   chat.scrollTop = chat.scrollHeight;
 }
@@ -480,12 +464,10 @@ function sendMessage() {
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
 
-  // Detect & mark target words
   const found = detectTargetWords(text);
   markChips(found);
   const feedback = buildFeedback(found);
 
-  // Show student message
   appendMessage('you', text, feedback);
 
   const isLastTurn = turnCount >= SCRIPTED_REPLIES.length - 1;
@@ -536,16 +518,15 @@ function restartChat() {
   document.getElementById('scoreScreen').classList.remove('show');
   document.getElementById('chat').innerHTML = `
     <div class="msg ai">
-      <div class="msg-avatar">🧑‍💼</div>
+      <div class="msg-avatar">🧑</div>
       <div>
-        <div class="bubble">Hey! Long time no chat. So, how's work going lately — are you still doing the same job, or did something change?</div>
+        <div class="bubble">Hey! It\'s been way too long. So, what\'s new with you — still at the same job, or did you switch things up?</div>
       </div>
     </div>`;
   document.querySelectorAll('.target-chip').forEach(c => c.classList.remove('used'));
   document.getElementById('userInput').focus();
 }
 
-// Auto-resize textarea
 const ta = document.getElementById('userInput');
 ta.addEventListener('input', () => {
   ta.style.height = 'auto';
