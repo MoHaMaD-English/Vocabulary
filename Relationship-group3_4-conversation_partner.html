@@ -381,44 +381,20 @@ const TRACK_WORDS = [
 
 let usedWords = new Set();
 let turnCount = 0;
-let conversationHistory = [];
 let isWaiting = false;
 
-const SYSTEM_PROMPT = `You are Sam, a warm, level-headed American friend who is good at listening and giving gentle advice. You are NOT a teacher — you are just a supportive friend.
-
-CONTEXT: Your friend (the student) is going through a rough patch in their relationship — things have been on the rocks lately. You're checking in on them and offering supportive, thoughtful advice as the conversation unfolds.
-
-Your job in this conversation:
-1. Listen first. Ask warm, open follow-up questions that invite the student to describe what's been going on: fights, the silent treatment, feeling taken for granted, whether they're on the same page with their significant other, etc.
-2. After the student shares some of the problem, gently transition into offering supportive advice — the kind a caring friend would give, not a therapist's clinical advice. Things like suggesting they talk it out, give it time, or think about what they really want (including bigger questions like whether they want to settle down or whether the relationship has run its course).
-3. Target expressions to listen for (don't force them, just create natural room for the student to use them): "in a relationship", "crazy about", "on the rocks", "not talking", "cold shoulder", "took for granted", "on the same page", "significant other", "miss", "broke up", "settle down", "tied the knot".
-4. After each student message, give a SHORT, warm, in-character reply (2–4 sentences max). Then ask ONE supportive follow-up question, or offer one small piece of gentle advice.
-5. If the student uses a target expression naturally, respond warmly to the CONTENT, not the vocabulary. Never say "good word choice."
-6. If the student makes a grammar or vocabulary mistake, gently rephrase what they said correctly in your OWN reply as a natural echo. Example: if they say "she give me the cold shoulder", you respond "Ugh, the cold shoulder is the worst — how long has she been doing that?" Don't directly correct them.
-7. NEVER break character to act like a teacher. Stay a caring, real friend throughout — empathetic, not preachy.
-8. Keep your tone warm, calm, and American. Use natural phrases like "that sounds really hard", "I hear you", "for what it's worth...", "have you two talked about...".
-
-IMPORTANT: Reply ONLY as Sam. Do not break character. Do not add any labels like "Sam:" at the start.`;
-
-async function callClaude(userMessage) {
-  conversationHistory.push({ role: "user", content: userMessage });
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT,
-      messages: conversationHistory
-    })
-  });
-
-  const data = await response.json();
-  const reply = data.content?.[0]?.text || "Sorry, I lost connection for a sec! What were you saying?";
-  conversationHistory.push({ role: "assistant", content: reply });
-  return reply;
-}
+// SCRIPTED conversation — no live API call, so this works standalone on GitHub Pages.
+// Replies move the conversation forward on a fixed schedule; the vocabulary
+// detection and feedback below still respond directly to what the student types.
+const SCRIPTED_REPLIES = [
+  "I'm really sorry to hear that. How long have things felt like they're on the rocks?",
+  "That sounds tough. Are you two even talking right now, or has it been pretty quiet between you?",
+  "Ugh, the cold shoulder is rough. Do you feel like your significant other has been taking you for granted lately?",
+  "That makes sense. Do you feel like you two are even on the same page about what you both want?",
+  "I hear you. Do you miss how things used to be, before all this started?",
+  "For what it's worth, a lot of couples go through this and come out stronger. Have you two talked about whether you want to work things out, or is it heading toward breaking up?",
+  "Whatever happens, I'm here for you. I should get going, but text me anytime, okay? Take care of yourself."
+];
 
 function detectTargetWords(text) {
   const lower = text.toLowerCase();
@@ -504,7 +480,7 @@ function removeTyping() {
   if (t) t.remove();
 }
 
-async function sendMessage() {
+function sendMessage() {
   if (isWaiting) return;
   const input = document.getElementById('userInput');
   const text = input.value.trim();
@@ -514,38 +490,32 @@ async function sendMessage() {
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
-  turnCount++;
 
+  // Detect & mark target words
   const found = detectTargetWords(text);
   markChips(found);
-  const feedback = buildFeedback(found);
+  const feedback = buildFeedback(found, text);
 
+  // Show student message
   appendMessage('you', text, feedback);
 
-  const isLastTurn = turnCount >= 7;
+  const isLastTurn = turnCount >= SCRIPTED_REPLIES.length - 1;
+  const reply = SCRIPTED_REPLIES[turnCount];
+  turnCount++;
 
   showTyping();
-
-  try {
-    let prompt = text;
-    if (isLastTurn) {
-      prompt = text + "\n\n[Note to Sam: This is the last message. Wrap up the conversation warmly like a supportive friend would — remind them you're there for them, and that things will work out one way or another.]";
-    }
-    const reply = await callClaude(prompt);
+  const delay = 650 + Math.random() * 700;
+  setTimeout(() => {
     removeTyping();
     appendMessage('ai', reply, null);
+    isWaiting = false;
+    document.getElementById('sendBtn').disabled = false;
+    input.focus();
 
     if (isLastTurn) {
-      setTimeout(showScore, 1200);
+      setTimeout(showScore, 1400);
     }
-  } catch (e) {
-    removeTyping();
-    appendMessage('ai', "Oops, my WiFi is acting up — say that again?", null);
-  }
-
-  isWaiting = false;
-  document.getElementById('sendBtn').disabled = false;
-  input.focus();
+  }, delay);
 }
 
 function showScore() {
@@ -571,7 +541,6 @@ function showScore() {
 function restartChat() {
   usedWords = new Set();
   turnCount = 0;
-  conversationHistory = [];
   isWaiting = false;
 
   document.getElementById('scoreScreen').classList.remove('show');
