@@ -377,44 +377,20 @@ const TRACK_WORDS = [
 
 let usedWords = new Set();
 let turnCount = 0;
-let conversationHistory = [];
 let isWaiting = false;
 
-const SYSTEM_PROMPT = `You are Priya, a warm, caring American friend reconnecting with your friend (the student) after a few months apart. You are NOT a teacher — you are just a genuinely interested friend.
-
-CONTEXT: The last time you and your friend talked, they were going through a hard time in their relationship — something happened (a fight, a falling out, drifting apart, possibly even a breakup or being dumped). Now, months later, you're catching up to see how they're doing now: did they work things out and get back together, or are they moving on and healing? Maybe they're seeing someone new (and you can gently and supportively ask if it's serious or more of a rebound). You are warm and curious, never judgmental.
-
-Your job in this conversation:
-1. Start by asking how they've been since you last talked, leaving room for them to explain what happened and how things are now.
-2. As the conversation goes on, ask warm, curious follow-up questions about: what originally happened (a fight, a falling out, drifting apart), whether they made up or got back together, how they're feeling now, whether they're over it, whether they're moving on, dating someone new (and if so, whether it feels like a rebound or something real).
-3. Target expressions to listen for (create natural room for them, don't force them): "dumped", "get over", "a rough patch", "a fight", "made up", "a falling out", "drifted apart", "work things out", "rebound", "moving on", "get back together".
-4. After each student message, give a SHORT, warm, in-character reply (2–4 sentences max). Then ask ONE genuine follow-up question.
-5. If the student uses a target expression naturally, respond warmly to the CONTENT, not the vocabulary. Never say "good word choice" or anything teacher-like.
-6. If the student makes a grammar or vocabulary mistake, gently rephrase what they said correctly in your OWN reply as a natural echo, not a direct correction. Example: if they say "we are drift apart", you respond "Aw, it's so sad when two people drift apart like that — do you think you'll ever talk again?"
-7. NEVER break character to act like a teacher. Stay a warm, present friend throughout.
-8. Keep your tone warm, hopeful, and American. Use natural phrases like "I'm so glad to hear that", "that makes sense", "how are you feeling about it now?", "I'm proud of you for...".
-
-IMPORTANT: Reply ONLY as Priya. Do not break character. Do not add any labels like "Priya:" at the start.`;
-
-async function callClaude(userMessage) {
-  conversationHistory.push({ role: "user", content: userMessage });
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT,
-      messages: conversationHistory
-    })
-  });
-
-  const data = await response.json();
-  const reply = data.content?.[0]?.text || "Sorry, I lost connection for a sec! What were you saying?";
-  conversationHistory.push({ role: "assistant", content: reply });
-  return reply;
-}
+// SCRIPTED conversation — no live API call, so this works standalone on GitHub Pages.
+// Replies move the conversation forward on a fixed schedule; the vocabulary
+// detection and feedback below still respond directly to what the student types.
+const SCRIPTED_REPLIES = [
+  "Oh wow, okay — so what actually happened back then? Was it one big fight, or more like you two just drifted apart?",
+  "That sounds really hard. Did you guys try to work things out, or was it pretty much over at that point?",
+  "I'm glad you're telling me this. Have you started to get over it, or is it still pretty raw?",
+  "That's so understandable. Are you seeing anyone new, or are you just focusing on moving on for now?",
+  "Totally fair. If you are dating someone new, does it feel like the real thing, or maybe more of a rebound?",
+  "I really admire how you're handling this. Do you think there's any chance you two could get back together someday, or is that door closed?",
+  "I'm just really proud of you for how far you've come. I have to run, but let's talk again soon — I miss you!"
+];
 
 function detectTargetWords(text) {
   const lower = text.toLowerCase();
@@ -499,7 +475,7 @@ function removeTyping() {
   if (t) t.remove();
 }
 
-async function sendMessage() {
+function sendMessage() {
   if (isWaiting) return;
   const input = document.getElementById('userInput');
   const text = input.value.trim();
@@ -509,38 +485,32 @@ async function sendMessage() {
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
-  turnCount++;
 
+  // Detect & mark target words
   const found = detectTargetWords(text);
   markChips(found);
-  const feedback = buildFeedback(found);
+  const feedback = buildFeedback(found, text);
 
+  // Show student message
   appendMessage('you', text, feedback);
 
-  const isLastTurn = turnCount >= 7;
+  const isLastTurn = turnCount >= SCRIPTED_REPLIES.length - 1;
+  const reply = SCRIPTED_REPLIES[turnCount];
+  turnCount++;
 
   showTyping();
-
-  try {
-    let prompt = text;
-    if (isLastTurn) {
-      prompt = text + "\n\n[Note to Priya: This is the last message. Wrap up the conversation warmly like a friend would — say you're really glad you caught up, and that you should hang out in person soon.]";
-    }
-    const reply = await callClaude(prompt);
+  const delay = 650 + Math.random() * 700;
+  setTimeout(() => {
     removeTyping();
     appendMessage('ai', reply, null);
+    isWaiting = false;
+    document.getElementById('sendBtn').disabled = false;
+    input.focus();
 
     if (isLastTurn) {
-      setTimeout(showScore, 1200);
+      setTimeout(showScore, 1400);
     }
-  } catch (e) {
-    removeTyping();
-    appendMessage('ai', "Oops, my WiFi is acting up — say that again?", null);
-  }
-
-  isWaiting = false;
-  document.getElementById('sendBtn').disabled = false;
-  input.focus();
+  }, delay);
 }
 
 function showScore() {
@@ -566,7 +536,6 @@ function showScore() {
 function restartChat() {
   usedWords = new Set();
   turnCount = 0;
-  conversationHistory = [];
   isWaiting = false;
 
   document.getElementById('scoreScreen').classList.remove('show');
