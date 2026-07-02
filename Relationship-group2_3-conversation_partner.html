@@ -380,46 +380,20 @@ const TRACK_WORDS = [
 
 let usedWords = new Set();
 let turnCount = 0;
-let conversationHistory = [];
 let isWaiting = false;
 
-const SYSTEM_PROMPT = `You are Marcus, a warm, easygoing American friend chatting casually with your friend (the student). You are NOT a teacher — you are just a friend catching up about love lives and family news.
-
-CONTEXT: Your cousin just got engaged, and that's the opener for this conversation. Throughout the chat, you naturally ask your friend (the student) about:
-- Whether they're single or dating someone (Group 2/3 vocabulary)
-- Details about their relationship if they have one: how it started, the chemistry, how they feel about the person, whether it's getting serious
-- You can also share a little more about your cousin's engagement story (how her partner popped the question, how long they've been together, etc.) to model the vocabulary naturally and keep the conversation balanced — don't just interview the student, share too.
-
-Your job in this conversation:
-1. Keep the conversation flowing naturally, like real friends catching up over coffee or texting. Ask warm, curious follow-up questions.
-2. After each student message, give a SHORT, casual in-character reply (2–4 sentences max). Then ask ONE follow-up question, OR share a small detail about your cousin's engagement to keep it a two-way conversation.
-3. Target expressions to listen for (don't force them, just create room for the student to use them naturally): "single", "dating", "together", "chemistry", "care about", "feelings for", "in love", "head over heels", "girlfriend", "boyfriend", "spend time together", "popped the question".
-4. If the student uses any target expression naturally, react warmly to the CONTENT of what they said, not the vocabulary itself. Do NOT say things like "great word choice."
-5. If the student makes a grammar or vocabulary mistake, gently rephrase what they said correctly in your OWN reply (as a natural echo, not a correction). Example: if they say "we are dating since March", you say "Oh nice, so you've been dating since March!" — don't say "you should say since."
-6. NEVER break character to act like a teacher. Stay a curious, supportive friend throughout.
-7. Keep your tone casual, warm, American. Use contractions. Use natural reactions like "no way!", "aw that's so sweet", "wait, really?", "I love that for you."
-
-IMPORTANT: Reply ONLY as Marcus. Do not break character. Do not add any labels like "Marcus:" at the start.`;
-
-async function callClaude(userMessage) {
-  conversationHistory.push({ role: "user", content: userMessage });
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT,
-      messages: conversationHistory
-    })
-  });
-
-  const data = await response.json();
-  const reply = data.content?.[0]?.text || "Sorry, I lost connection for a sec! What were you saying?";
-  conversationHistory.push({ role: "assistant", content: reply });
-  return reply;
-}
+// SCRIPTED conversation — no live API call, so this works standalone on GitHub Pages.
+// Replies move the conversation forward on a fixed schedule; the vocabulary
+// detection and feedback below still respond directly to what the student types.
+const SCRIPTED_REPLIES = [
+  "Yeah so anyway — are you seeing anyone, or still single these days?",
+  "Oh nice! How long have you guys been dating? Or is it still pretty new?",
+  "That's awesome. Was there instant chemistry, or did it kind of build over time?",
+  "Aw, I can tell you really care about this person. Do you think you're falling in love, or is it too soon to say?",
+  "Ha, sounds like you're head over heels! Do you guys get to spend a lot of time together, or is it tricky with schedules?",
+  "That's so sweet. Speaking of serious relationships — my cousin's fiancé actually popped the question on a hiking trip, completely out of nowhere! Anyway, sorry, back to you — anything else going on with you two?",
+  "This has been so fun catching up! I really have to run, but let's grab coffee soon and you can tell me more. Talk soon!"
+];
 
 function detectTargetWords(text) {
   const lower = text.toLowerCase();
@@ -506,7 +480,7 @@ function removeTyping() {
   if (t) t.remove();
 }
 
-async function sendMessage() {
+function sendMessage() {
   if (isWaiting) return;
   const input = document.getElementById('userInput');
   const text = input.value.trim();
@@ -516,38 +490,32 @@ async function sendMessage() {
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
-  turnCount++;
 
+  // Detect & mark target words
   const found = detectTargetWords(text);
   markChips(found);
-  const feedback = buildFeedback(found);
+  const feedback = buildFeedback(found, text);
 
+  // Show student message
   appendMessage('you', text, feedback);
 
-  const isLastTurn = turnCount >= 7;
+  const isLastTurn = turnCount >= SCRIPTED_REPLIES.length - 1;
+  const reply = SCRIPTED_REPLIES[turnCount];
+  turnCount++;
 
   showTyping();
-
-  try {
-    let prompt = text;
-    if (isLastTurn) {
-      prompt = text + "\n\n[Note to Marcus: This is the last message. Wrap up the conversation warmly like a friend would — say you have to head out but loved catching up, and wish them well.]";
-    }
-    const reply = await callClaude(prompt);
+  const delay = 650 + Math.random() * 700;
+  setTimeout(() => {
     removeTyping();
     appendMessage('ai', reply, null);
+    isWaiting = false;
+    document.getElementById('sendBtn').disabled = false;
+    input.focus();
 
     if (isLastTurn) {
-      setTimeout(showScore, 1200);
+      setTimeout(showScore, 1400);
     }
-  } catch (e) {
-    removeTyping();
-    appendMessage('ai', "Oops, my WiFi is acting up — say that again?", null);
-  }
-
-  isWaiting = false;
-  document.getElementById('sendBtn').disabled = false;
-  input.focus();
+  }, delay);
 }
 
 function showScore() {
@@ -573,7 +541,6 @@ function showScore() {
 function restartChat() {
   usedWords = new Set();
   turnCount = 0;
-  conversationHistory = [];
   isWaiting = false;
 
   document.getElementById('scoreScreen').classList.remove('show');
