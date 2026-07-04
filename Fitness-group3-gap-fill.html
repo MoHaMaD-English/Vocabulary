@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gap-Fill · Running & Walking</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --peach:    #F3DCC6;
+    --power:    #D9622C;
+    --deep:     #23201B;
+    --olive:    #6B5B3E;
+    --cream:    #FDF9F5;
+    --mist:     #EAE2D6;
+    --correct:  #3A7D5E;
+    --wrong:    #B03A3A;
+    --correct-bg: #E8F5EF;
+    --wrong-bg:   #FDECEA;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--deep);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  header { background: var(--deep); padding: 28px 24px 22px; text-align: center; }
+  header .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--peach); margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif; font-size: clamp(22px, 5.5vw, 32px);
+    color: #fff; line-height: 1.15;
+  }
+  header h1 em { font-style: italic; color: var(--peach); }
+  header .subtitle { margin-top: 8px; font-size: 13px; color: #d8cdbe; }
+
+  .bank-wrap { max-width: 640px; margin: 24px auto 0; padding: 0 16px; }
+  .bank-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--olive); margin-bottom: 10px;
+  }
+  .bank { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--deep); color: #fff; font-size: 13px; font-weight: 500;
+    padding: 6px 14px; border-radius: 20px; cursor: default;
+    transition: opacity 0.2s, transform 0.15s; user-select: none;
+  }
+  .chip.used { opacity: 0.28; text-decoration: line-through; }
+
+  .sentences {
+    max-width: 640px; margin: 28px auto 0; padding: 0 16px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .card {
+    background: #fff; border-radius: 14px; padding: 18px 20px;
+    border: 1.5px solid var(--mist); transition: border-color 0.2s;
+  }
+  .card.correct-card { border-color: var(--correct); background: var(--correct-bg); }
+  .card.wrong-card   { border-color: var(--wrong);   background: var(--wrong-bg); }
+
+  .sentence-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    font-size: 16px; line-height: 1.5;
+  }
+  .num { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--power); min-width: 22px; }
+  .blank-wrap { display: inline-flex; align-items: center; position: relative; }
+  .blank {
+    border: none; border-bottom: 2.5px solid var(--olive); background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--deep); width: 170px; padding: 2px 4px; outline: none;
+    text-align: center; transition: border-color 0.2s;
+  }
+  .blank:focus { border-color: var(--power); }
+  .blank.correct-input { border-color: var(--correct); color: var(--correct); }
+  .blank.wrong-input   { border-color: var(--wrong);   color: var(--wrong); }
+
+  .feedback-inline { font-size: 12px; font-weight: 600; margin-top: 6px; display: none; }
+  .feedback-inline.show { display: block; }
+  .feedback-inline.ok  { color: var(--correct); }
+  .feedback-inline.err { color: var(--wrong); }
+
+  .actions {
+    max-width: 640px; margin: 28px auto 0; padding: 0 16px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1; min-width: 130px; padding: 14px 20px; border-radius: 12px;
+    border: none; font-family: 'DM Sans', sans-serif; font-size: 15px;
+    font-weight: 600; cursor: pointer; transition: transform 0.12s, opacity 0.2s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-check { background: var(--power); color: #fff; }
+  .btn-reset { background: var(--mist);  color: var(--deep); }
+
+  .score-banner { max-width: 640px; margin: 20px auto 0; padding: 0 16px; display: none; }
+  .score-banner.show { display: block; }
+  .score-inner { background: var(--deep); color: #fff; border-radius: 14px; padding: 18px 22px; text-align: center; }
+  .score-inner .big { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--peach); }
+  .score-inner p { font-size: 13px; color: #d8cdbe; margin-top: 4px; }
+
+  .hearts { text-align: center; font-size: 22px; padding: 22px 0 0; letter-spacing: 8px; opacity: 0.35; }
+
+  .gate-overlay {
+    position: fixed; inset: 0; background: var(--deep);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999; padding: 24px;
+  }
+  .gate-box { background: var(--cream); border-radius: 16px; padding: 32px 26px; max-width: 360px; width: 100%; text-align: center; }
+  .gate-box h2 { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--deep); margin-bottom: 8px; }
+  .gate-box p { font-size: 13px; color: var(--olive); margin-bottom: 18px; }
+  .gate-box input {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1.5px solid var(--mist); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; outline: none; margin-bottom: 14px;
+  }
+  .gate-box input:focus { border-color: var(--power); }
+  .gate-box button {
+    width: 100%; padding: 13px 20px; border-radius: 10px; border: none;
+    background: var(--power); color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .gate-error { display: none; font-size: 12px; color: var(--wrong); margin: -8px 0 12px; }
+  .gate-error.show { display: block; }
+
+  .btn-copy {
+    padding: 12px 20px; border-radius: 10px; border: 1.5px solid var(--peach);
+    background: transparent; color: var(--peach); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 12px;
+  }
+  .btn-copy.copied { background: var(--peach); color: var(--deep); }
+</style>
+</head>
+<body class="gated">
+
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-box">
+    <h2>Before you start</h2>
+    <p>Enter your name so your teacher can see your results.</p>
+    <input type="text" id="studentNameInput" placeholder="Your full name" autocomplete="off">
+    <div class="gate-error" id="gateError">Please type your name to continue.</div>
+    <button onclick="startExercise()">Start Exercise</button>
+  </div>
+</div>
+
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="resultsForm" action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+  <input type="text" name="entry.1106597571" id="entryName">
+  <input type="text" name="entry.26189871" id="entryExercise">
+  <input type="text" name="entry.291802639" id="entryScore">
+  <input type="text" name="entry.1164298030" id="entryTotal">
+  <input type="text" name="entry.818625323" id="entryMistakes">
+</form>
+
+<header>
+  <div class="eyebrow">Fitness Vocabulary · B1 · Group 3</div>
+  <h1>Running & <em>Walking</em></h1>
+  <div class="subtitle">Fill in each blank with the correct expression from the word bank.</div>
+</header>
+
+<div class="hearts">🏃 🥾 ⏱️</div>
+
+<div class="bank-wrap">
+  <div class="bank-label">Word Bank</div>
+  <div class="bank" id="bank">
+    <span class="chip" data-word="a 5K">a 5K</span>
+    <span class="chip" data-word="a runner's high">a runner's high</span>
+    <span class="chip" data-word="jog">jog</span>
+    <span class="chip" data-word="step count">step count</span>
+    <span class="chip" data-word="catch your breath">catch your breath</span>
+    <span class="chip" data-word="go for a run">go for a run</span>
+    <span class="chip" data-word="a second wind">a second wind</span>
+    <span class="chip" data-word="pace yourself">pace yourself</span>
+    <span class="chip" data-word="hit a wall">hit a wall</span>
+    <span class="chip" data-word="sprint">sprint</span>
+    <span class="chip" data-word="a personal best">a personal best</span>
+    <span class="chip" data-word="pick up the pace">pick up the pace</span>
+  </div>
+</div>
+
+<div class="sentences" id="sentences">
+
+  <div class="card" data-answer="go for a run">
+    <div class="sentence-row">
+      <span class="num">1</span>
+      <span>Every morning before breakfast, I like to</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="jog">
+    <div class="sentence-row">
+      <span class="num">2</span>
+      <span>She likes to</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>around the park for thirty minutes.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="sprint">
+    <div class="sentence-row">
+      <span class="num">3</span>
+      <span>At the end of the race, he had to</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>to the finish line.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="pick up the pace">
+    <div class="sentence-row">
+      <span class="num">4</span>
+      <span>The coach told us to</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>during the last mile.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="pace yourself">
+    <div class="sentence-row">
+      <span class="num">5</span>
+      <span>Don't run too fast at the start — remember to</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="catch your breath">
+    <div class="sentence-row">
+      <span class="num">6</span>
+      <span>After the sprint, I had to stop and</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="a runner's high">
+    <div class="sentence-row">
+      <span class="num">7</span>
+      <span>After a long run, many people say they feel</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="hit a wall">
+    <div class="sentence-row">
+      <span class="num">8</span>
+      <span>Around mile twenty, marathon runners often</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>and feel completely exhausted.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="a second wind">
+    <div class="sentence-row">
+      <span class="num">9</span>
+      <span>I was tired at mile ten, but then I got</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>and finished strong.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="a personal best">
+    <div class="sentence-row">
+      <span class="num">10</span>
+      <span>She ran the 10K in fifty minutes — that's</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>for her.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="a 5K">
+    <div class="sentence-row">
+      <span class="num">11</span>
+      <span>I'm training for</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>next month.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="card" data-answer="step count">
+    <div class="sentence-row">
+      <span class="num">12</span>
+      <span>My phone tracks my</span>
+      <span class="blank-wrap"><input class="blank" type="text" placeholder="___________" autocomplete="off" spellcheck="false"></span>
+      <span>every day.</span>
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+</div>
+
+<div class="actions">
+  <button class="btn btn-check"  onclick="checkAnswers()">Check answers</button>
+  <button class="btn btn-reset"  onclick="resetAll()">Try again</button>
+</div>
+
+<div class="score-banner" id="scoreBanner">
+  <div class="score-inner">
+    <div class="big" id="scoreText"></div>
+    <p id="scoreMsg"></p>
+    <button class="btn-copy" id="copyBtn" onclick="copyResults()">📋 Copy my results</button>
+  </div>
+</div>
+
+<script>
+  const EXERCISE_NAME = 'Fitness - Group 3 - Running & Walking (Gap-Fill)';
+  let studentName = '';
+  let mistakeIndexes = new Set();
+  let alreadySubmitted = false;
+
+  const cards = document.querySelectorAll('.card');
+
+  function startExercise() {
+    const input = document.getElementById('studentNameInput');
+    const error = document.getElementById('gateError');
+    const name  = input.value.trim();
+    if (name === '') { error.classList.add('show'); return; }
+    studentName = name;
+    document.getElementById('gateOverlay').style.display = 'none';
+    document.body.classList.remove('gated');
+  }
+
+  function submitResults(score, total, mistakes) {
+    document.getElementById('entryName').value = studentName;
+    document.getElementById('entryExercise').value = EXERCISE_NAME;
+    document.getElementById('entryScore').value = score;
+    document.getElementById('entryTotal').value = total;
+    document.getElementById('entryMistakes').value = mistakes;
+    document.getElementById('resultsForm').submit();
+  }
+
+  function copyResults() {
+    const scoreText = document.getElementById('scoreText').textContent;
+    const text = `Name: ${studentName}\nExercise: ${EXERCISE_NAME}\nScore: ${scoreText}\nMistakes: ${mistakeIndexes.size}`;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copy my results';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  function normalise(str) { return str.trim().toLowerCase().replace(/\s+/g, ' '); }
+
+  function updateChip(answer, used) {
+    const chip = document.querySelector(`.chip[data-word="${answer}"]`);
+    if (chip) chip.classList.toggle('used', used);
+  }
+
+  function checkAnswers() {
+    let correct = 0;
+    cards.forEach((card, idx) => {
+      const answer  = card.dataset.answer;
+      const input   = card.querySelector('.blank');
+      const feedback = card.querySelector('.feedback-inline');
+      const userVal = normalise(input.value);
+
+      if (userVal === '') return;
+
+      if (userVal === normalise(answer)) {
+        correct++;
+        input.classList.add('correct-input');
+        input.classList.remove('wrong-input');
+        card.classList.add('correct-card');
+        card.classList.remove('wrong-card');
+        feedback.textContent = '✓ Correct!';
+        feedback.className = 'feedback-inline show ok';
+        updateChip(answer, true);
+      } else {
+        input.classList.add('wrong-input');
+        input.classList.remove('correct-input');
+        card.classList.add('wrong-card');
+        card.classList.remove('correct-card');
+        feedback.textContent = '✗ Not quite — try again!';
+        feedback.className = 'feedback-inline show err';
+        mistakeIndexes.add(idx);
+      }
+    });
+
+    const filled = [...cards].filter(c => c.querySelector('.blank').value.trim() !== '');
+    if (filled.length === cards.length) {
+      const banner  = document.getElementById('scoreBanner');
+      const scoreT  = document.getElementById('scoreText');
+      const scoreM  = document.getElementById('scoreMsg');
+      scoreT.textContent = `${correct} / ${cards.length}`;
+      if (correct === cards.length) {
+        scoreM.textContent = 'Perfect score! Great work! 🎉';
+      } else if (correct >= 8) {
+        scoreM.textContent = 'Almost there — review the ones you missed.';
+      } else {
+        scoreM.textContent = 'Keep practicing — you\'ve got this!';
+      }
+      banner.classList.add('show');
+
+      if (!alreadySubmitted) {
+        alreadySubmitted = true;
+        submitResults(correct, cards.length, mistakeIndexes.size);
+      }
+    }
+  }
+
+  function resetAll() {
+    cards.forEach(card => {
+      const input    = card.querySelector('.blank');
+      const feedback = card.querySelector('.feedback-inline');
+      input.value = '';
+      input.classList.remove('correct-input', 'wrong-input');
+      card.classList.remove('correct-card', 'wrong-card');
+      feedback.className = 'feedback-inline';
+    });
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('used'));
+    document.getElementById('scoreBanner').classList.remove('show');
+    mistakeIndexes = new Set();
+    alreadySubmitted = false;
+  }
+
+  document.querySelectorAll('.blank').forEach(input => {
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswers(); });
+  });
+
+  document.getElementById('studentNameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startExercise();
+  });
+</script>
+</body>
+</html>
