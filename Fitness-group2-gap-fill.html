@@ -340,6 +340,7 @@
   <div class="score-inner">
     <div class="big" id="scoreText"></div>
     <p id="scoreMsg"></p>
+    <div id="submitStatusFit" style="font-size:12px;color:#7ecba5;margin-top:6px;min-height:16px;"></div>
     <button class="btn-copy" id="copyBtn" onclick="copyResults()">📋 Copy my results</button>
   </div>
 </div>
@@ -363,12 +364,7 @@
   }
 
   function submitResults(score, total, mistakes) {
-    document.getElementById('entryName').value = studentName;
-    document.getElementById('entryExercise').value = EXERCISE_NAME;
-    document.getElementById('entryScore').value = score;
-    document.getElementById('entryTotal').value = total;
-    document.getElementById('entryMistakes').value = mistakes;
-    document.getElementById('resultsForm').submit();
+    submitViaFetch(score, total, mistakes);
   }
 
   function copyResults() {
@@ -466,6 +462,28 @@
   document.getElementById('studentNameInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') startExercise();
   });
+
+  async function submitViaFetch(score, total, mistakes) {
+    const statusEl = document.getElementById('submitStatusFit');
+    const body = new URLSearchParams({
+      'entry.1106597571': studentName,
+      'entry.26189871':   EXERCISE_NAME,
+      'entry.291802639':  score,
+      'entry.1164298030': total,
+      'entry.818625323':  mistakes
+    });
+    try {
+      await fetch('https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse', {
+        method: 'POST', mode: 'no-cors',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body.toString()
+      });
+      if (statusEl) statusEl.textContent = '✓ Results sent to your teacher';
+    } catch(e) {
+      if (statusEl) statusEl.textContent = '⚠ Could not send — use Copy button';
+    }
+  }
+
 </script>
 </body>
 </html>
