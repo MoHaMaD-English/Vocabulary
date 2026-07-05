@@ -6,13 +6,12 @@
 <title>Gap-Fill · Healing & Moving On</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --sage:       #2D4A3E;
-    --fern:       #4A7C6A;
-    --mint:       #C8E6DC;
+    --accent1:    #C8E6DC;
+    --accent2:    #4A7C6A;
+    --deep:       #2D4A3E;
+    --mid:        #4A7C6A;
     --cream:      #F5FAF7;
     --mist:       #DDF0E8;
     --correct:    #3A7D5E;
@@ -20,135 +19,53 @@
     --correct-bg: #E8F5EF;
     --wrong-bg:   #FDECEA;
   }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--sage);
-    min-height: 100vh;
-    padding: 0 0 60px;
-  }
-
-  header {
-    background: var(--sage);
-    padding: 28px 24px 22px;
-    text-align: center;
-  }
-  header .eyebrow {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
-    text-transform: uppercase; color: var(--mint); margin-bottom: 6px;
-  }
-  header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(22px, 5.5vw, 32px);
-    color: #fff; line-height: 1.15;
-  }
-  header h1 em { font-style: italic; color: var(--mint); }
-  header .subtitle { margin-top: 8px; font-size: 13px; color: #9ec4b4; }
-
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--deep); min-height: 100vh; padding: 0 0 60px; }
+  header { background: var(--deep); padding: 28px 24px 22px; text-align: center; }
+  header .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent1); margin-bottom: 6px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(22px, 5.5vw, 32px); color: #fff; line-height: 1.15; }
+  header h1 em { font-style: italic; color: var(--accent1); }
+  header .subtitle { margin-top: 8px; font-size: 13px; color: #c4b3be; }
   .bank-wrap { max-width: 680px; margin: 24px auto 0; padding: 0 16px; }
-  .bank-label {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--fern); margin-bottom: 10px;
-  }
+  .bank-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
   .bank { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    background: var(--sage); color: #fff; font-size: 13px; font-weight: 500;
-    padding: 6px 14px; border-radius: 20px; user-select: none; transition: opacity 0.2s;
-  }
+  .chip { background: var(--deep); color: #fff; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 20px; user-select: none; transition: opacity 0.2s; }
   .chip.used { opacity: 0.28; text-decoration: line-through; }
-
-  .sentences {
-    max-width: 680px; margin: 28px auto 0; padding: 0 16px;
-    display: flex; flex-direction: column; gap: 14px;
-  }
-  .card {
-    background: #fff; border-radius: 14px; padding: 16px 20px;
-    border: 1.5px solid var(--mist); transition: border-color 0.2s, background 0.2s;
-  }
+  .sentences { max-width: 680px; margin: 28px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 14px; }
+  .card { background: #fff; border-radius: 14px; padding: 16px 20px; border: 1.5px solid var(--mist); transition: border-color 0.2s, background 0.2s; }
   .card.correct-card { border-color: var(--correct); background: var(--correct-bg); }
   .card.wrong-card   { border-color: var(--wrong);   background: var(--wrong-bg); }
-
-  .sentence-row {
-    display: flex; align-items: center; flex-wrap: wrap;
-    gap: 5px; font-size: 15.5px; line-height: 1.6;
-  }
-  .num {
-    font-family: 'DM Serif Display', serif; font-size: 18px;
-    color: var(--fern); min-width: 24px;
-  }
-  .blank {
-    border: none; border-bottom: 2.5px solid var(--fern);
-    background: transparent; font-family: 'DM Sans', sans-serif;
-    font-size: 15px; font-weight: 600; color: var(--sage);
-    padding: 2px 4px; outline: none; text-align: center;
-    transition: border-color 0.2s; min-width: 80px;
-  }
-  .blank:focus { border-color: var(--sage); }
+  .sentence-row { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 15.5px; line-height: 1.6; }
+  .num { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent2); min-width: 24px; }
+  .blank { border: none; border-bottom: 2.5px solid var(--mid); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--deep); padding: 2px 4px; outline: none; text-align: center; transition: border-color 0.2s; min-width: 80px; }
+  .blank:focus { border-color: var(--accent2); }
   .blank.correct-input { border-color: var(--correct); color: var(--correct); }
   .blank.wrong-input   { border-color: var(--wrong);   color: var(--wrong); }
-
   .feedback-inline { font-size: 12px; font-weight: 600; margin-top: 5px; display: none; }
   .feedback-inline.show { display: block; }
   .feedback-inline.ok  { color: var(--correct); }
   .feedback-inline.err { color: var(--wrong); }
-
   .actions { max-width: 680px; margin: 26px auto 0; padding: 0 16px; display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn {
-    flex: 1; min-width: 130px; padding: 14px 20px; border-radius: 12px; border: none;
-    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
-    cursor: pointer; transition: transform 0.12s;
-  }
+  .btn { flex: 1; min-width: 130px; padding: 14px 20px; border-radius: 12px; border: none; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.12s; }
   .btn:active { transform: scale(0.97); }
-  .btn-check { background: var(--fern); color: #fff; }
-  .btn-reset { background: var(--mist); color: var(--sage); }
-
+  .btn-check { background: var(--accent2); color: #fff; }
+  .btn-reset { background: var(--mist); color: var(--deep); }
   .score-banner { max-width: 680px; margin: 20px auto 0; padding: 0 16px; display: none; }
   .score-banner.show { display: block; }
-  .score-inner {
-    background: var(--sage); color: #fff; border-radius: 14px;
-    padding: 18px 22px; text-align: center;
-  }
-  .score-inner .big { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--mint); }
-  .score-inner p { font-size: 13px; color: #9ec4b4; margin-top: 4px; }
-
+  .score-inner { background: var(--deep); color: #fff; border-radius: 14px; padding: 18px 22px; text-align: center; }
+  .score-inner .big { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--accent1); }
+  .score-inner p { font-size: 13px; color: #c4b3be; margin-top: 4px; }
   .hearts { text-align: center; font-size: 22px; padding: 22px 0 0; letter-spacing: 8px; opacity: 0.35; }
-
-  /* ── NAME GATE ── */
-  .gate-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 999; padding: 24px;
-  }
-  .gate-box {
-    background: #fff; border-radius: 16px; padding: 32px 26px;
-    max-width: 360px; width: 100%; text-align: center;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .gate-box h2 { font-family: 'DM Serif Display', serif; font-size: 24px; color: #1a1a2e; margin-bottom: 8px; }
-  .gate-box p { font-size: 13px; color: #666; margin-bottom: 18px; }
-  .gate-box input {
-    width: 100%; padding: 12px 14px; border-radius: 10px;
-    border: 1.5px solid #ddd; font-family: 'DM Sans', sans-serif;
-    font-size: 15px; outline: none; margin-bottom: 14px; color: #333;
-  }
-  .gate-box button {
-    width: 100%; padding: 13px 20px; border-radius: 10px; border: none;
-    background: #C45C6A; color: #fff; font-family: 'DM Sans', sans-serif;
-    font-size: 15px; font-weight: 600; cursor: pointer;
-  }
-  .gate-error { font-size: 12px; color: #B03A3A; margin-top: -8px; margin-bottom: 12px; display: none; }
+  .gate-overlay { position: fixed; inset: 0; background: var(--deep); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 24px; }
+  .gate-box { background: var(--cream); border-radius: 16px; padding: 32px 26px; max-width: 360px; width: 100%; text-align: center; }
+  .gate-box h2 { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--deep); margin-bottom: 8px; }
+  .gate-box p { font-size: 13px; color: var(--mid); margin-bottom: 18px; }
+  .gate-box input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--mist); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; margin-bottom: 14px; }
+  .gate-box input:focus { border-color: var(--accent2); }
+  .gate-box button { width: 100%; padding: 13px 20px; border-radius: 10px; border: none; background: var(--accent2); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .gate-error { display: none; font-size: 12px; color: var(--wrong); margin: -8px 0 12px; }
   .gate-error.show { display: block; }
-  body.gated { overflow: hidden; }
-  /* ── COPY BUTTON ── */
-  .btn-copy {
-    margin-top: 10px; padding: 12px 20px; border-radius: 10px;
-    border: 1.5px solid rgba(255,255,255,0.35); background: transparent;
-    color: rgba(255,255,255,0.8); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600; cursor: pointer; width: 100%;
-    display: block;
-  }
-  .btn-copy.copied { background: rgba(255,255,255,0.2); }
+  .btn-copy { padding: 12px 20px; border-radius: 10px; border: 1.5px solid var(--accent1); background: transparent; color: var(--accent1); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+  .btn-copy.copied { background: var(--accent1); color: var(--deep); }
 </style>
 </head>
 <body class="gated">
@@ -163,16 +80,16 @@
     <button onclick="startExercise()">Start Exercise</button>
   </div>
 </div>
+
 <!-- HIDDEN RESULTS FORM -->
-<iframe name="hidden_iframe" style="display:none;"></iframe>
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 <form id="resultsForm" action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse" method="POST" target="hidden_iframe" style="display:none;">
   <input type="text" name="entry.1106597571" id="entryName">
-  <input type="text" name="entry.26189871"   id="entryExercise" value="Relationships - Group 5 - Healing & Moving On (Gap-Fill)">
-  <input type="text" name="entry.291802639"  id="entryScore">
+  <input type="text" name="entry.26189871" id="entryExercise">
+  <input type="text" name="entry.291802639" id="entryScore">
   <input type="text" name="entry.1164298030" id="entryTotal">
-  <input type="text" name="entry.818625323"  id="entryMistakes">
+  <input type="text" name="entry.818625323" id="entryMistakes">
 </form>
-
 
 <header>
   <div class="eyebrow">Love &amp; Relationships · B1 · Group 5</div>
@@ -182,7 +99,6 @@
 
 <div class="hearts">🌱 💚 🌿</div>
 
-<!-- WORD BANK — shuffled -->
 <div class="bank-wrap">
   <div class="bank-label">Word Bank</div>
   <div class="bank" id="bank">
@@ -195,70 +111,63 @@
   </div>
 </div>
 
-<!-- SENTENCES -->
 <div class="sentences" id="sentences">
 
-  <!-- 1. rebound -->
   <div class="card" data-answer="rebound">
     <div class="sentence-row">
       <span class="num">1</span>
       <span>He started dating someone new right away — it looks like a</span>
-      <input class="blank" type="text" style="width:110px" placeholder="__________" autocomplete="off" spellcheck="false">
+      <input class="blank" type="text" style="width:110px" placeholder="____________" autocomplete="off" spellcheck="false">
       <span>to me.</span>
     </div>
     <div class="feedback-inline"></div>
   </div>
 
-  <!-- 2. work things out -->
   <div class="card" data-answer="work things out">
     <div class="sentence-row">
       <span class="num">2</span>
       <span>They went to couples therapy to try to</span>
-      <input class="blank" type="text" style="width:160px" placeholder="______________" autocomplete="off" spellcheck="false">
+      <input class="blank" type="text" style="width:160px" placeholder="____________" autocomplete="off" spellcheck="false">
       <span>.</span>
     </div>
     <div class="feedback-inline"></div>
   </div>
 
-  <!-- 3. get back together -->
   <div class="card" data-answer="get back together">
     <div class="sentence-row">
       <span class="num">3</span>
       <span>I can't believe they decided to</span>
-      <input class="blank" type="text" style="width:175px" placeholder="________________" autocomplete="off" spellcheck="false">
+      <input class="blank" type="text" style="width:175px" placeholder="____________" autocomplete="off" spellcheck="false">
       <span>after everything that happened.</span>
     </div>
     <div class="feedback-inline"></div>
   </div>
 
-  <!-- 4. made up -->
   <div class="card" data-answer="made up">
     <div class="sentence-row">
       <span class="num">4</span>
       <span>They fought all weekend but</span>
-      <input class="blank" type="text" style="width:105px" placeholder="________" autocomplete="off" spellcheck="false">
+      <input class="blank" type="text" style="width:105px" placeholder="____________" autocomplete="off" spellcheck="false">
       <span>by Monday morning.</span>
     </div>
     <div class="feedback-inline"></div>
   </div>
 
-  <!-- 5. get over -->
   <div class="card" data-answer="get over">
     <div class="sentence-row">
       <span class="num">5</span>
       <span>It took him months to</span>
-      <input class="blank" type="text" style="width:105px" placeholder="________" autocomplete="off" spellcheck="false">
+      <input class="blank" type="text" style="width:105px" placeholder="____________" autocomplete="off" spellcheck="false">
       <span>her — he was really in love.</span>
     </div>
     <div class="feedback-inline"></div>
   </div>
 
-  <!-- 6. moving on -->
   <div class="card" data-answer="moving on">
     <div class="sentence-row">
       <span class="num">6</span>
       <span>It took her a while, but she's finally</span>
-      <input class="blank" type="text" style="width:125px" placeholder="__________" autocomplete="off" spellcheck="false">
+      <input class="blank" type="text" style="width:125px" placeholder="____________" autocomplete="off" spellcheck="false">
       <span>and seems really happy now.</span>
     </div>
     <div class="feedback-inline"></div>
@@ -266,13 +175,11 @@
 
 </div>
 
-<!-- ACTIONS -->
 <div class="actions">
   <button class="btn btn-check" onclick="checkAnswers()">Check answers</button>
   <button class="btn btn-reset" onclick="resetAll()">Try again</button>
 </div>
 
-<!-- SCORE -->
 <div class="score-banner" id="scoreBanner">
   <div class="score-inner">
     <div class="big" id="scoreText"></div>
@@ -282,10 +189,11 @@
 </div>
 
 <script>
-  // ── TRACKING ──
+  const EXERCISE_NAME = 'Relationships - Group 5 - Healing & Moving On (Gap-Fill)';
   let studentName = '';
   let mistakeIndexes = new Set();
   let alreadySubmitted = false;
+  const cards = document.querySelectorAll('.card');
 
   function startExercise() {
     const input = document.getElementById('studentNameInput');
@@ -299,6 +207,7 @@
 
   function submitResults(score, total, mistakes) {
     document.getElementById('entryName').value     = studentName;
+    document.getElementById('entryExercise').value = EXERCISE_NAME;
     document.getElementById('entryScore').value    = score;
     document.getElementById('entryTotal').value    = total;
     document.getElementById('entryMistakes').value = mistakes;
@@ -307,8 +216,7 @@
 
   function copyResults() {
     const scoreText = document.getElementById('scoreText').textContent;
-    const exercise  = document.getElementById('entryExercise').value;
-    const text = 'Name: ' + studentName + '\nExercise: ' + exercise + '\nScore: ' + scoreText;
+    const text = `Name: ${studentName}\nExercise: ${EXERCISE_NAME}\nScore: ${scoreText}\nMistakes: ${mistakeIndexes.size}`;
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
       btn.textContent = '✓ Copied!';
@@ -316,15 +224,6 @@
       setTimeout(() => { btn.textContent = '📋 Copy my results'; btn.classList.remove('copied'); }, 2000);
     });
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('studentNameInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') startExercise();
-    });
-  });
-
-  const cards = document.querySelectorAll('.card');
-  const TOTAL = cards.length;
 
   function norm(s) { return s.trim().toLowerCase().replace(/\s+/g, ' '); }
 
@@ -334,13 +233,12 @@
   }
 
   function checkAnswers() {
-    let correct = 0, filled = 0;
+    let correct = 0;
     cards.forEach((card, idx) => {
       const answer   = card.dataset.answer;
       const input    = card.querySelector('.blank');
       const feedback = card.querySelector('.feedback-inline');
       if (norm(input.value) === '') return;
-      filled++;
       if (norm(input.value) === norm(answer)) {
         correct++;
         input.classList.add('correct-input'); input.classList.remove('wrong-input');
@@ -356,14 +254,16 @@
         mistakeIndexes.add(idx);
       }
     });
-    if (filled === TOTAL) {
-      document.getElementById('scoreText').textContent = `${correct} / ${TOTAL}`;
-      document.getElementById('scoreMsg').textContent =
-        correct === TOTAL ? 'Perfect score! Excellent work! 🎉' :
-        correct >= 4      ? 'Great job — just a couple to review.' :
-                            "Keep going — you've got this!";
+    const filled = [...cards].filter(c => c.querySelector('.blank').value.trim() !== '');
+    if (filled.length === cards.length) {
+      const scoreT = document.getElementById('scoreText');
+      const scoreM = document.getElementById('scoreMsg');
+      scoreT.textContent = `${correct} / ${cards.length}`;
+      scoreM.textContent = correct === cards.length ? 'Perfect score! Great work! 🎉' :
+                           correct >= 4        ? 'Almost there — review the ones you missed.' :
+                                                       "Keep practicing — you've got this!";
       document.getElementById('scoreBanner').classList.add('show');
-      if (!alreadySubmitted) { alreadySubmitted = true; submitResults(correct, TOTAL, mistakeIndexes.size); }
+      if (!alreadySubmitted) { alreadySubmitted = true; submitResults(correct, cards.length, mistakeIndexes.size); }
     }
   }
 
@@ -384,6 +284,9 @@
 
   document.querySelectorAll('.blank').forEach(input => {
     input.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswers(); });
+  });
+  document.getElementById('studentNameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startExercise();
   });
 </script>
 </body>
