@@ -257,6 +257,21 @@
 </style>
 </head>
 <body>
+<!-- NAME GATE -->
+<div id="gateOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;">
+  <div style="background:#fff;border-radius:16px;padding:32px 26px;max-width:360px;width:100%;text-align:center;font-family:sans-serif;">
+    <h2 style="font-size:22px;margin-bottom:8px;color:#1a1a2e;">Before you start</h2>
+    <p style="font-size:13px;color:#666;margin-bottom:18px;">Enter your name so your teacher can see your results.</p>
+    <input type="text" id="gateNameInput" placeholder="Your full name" autocomplete="off"
+      style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #ddd;font-size:15px;outline:none;margin-bottom:14px;box-sizing:border-box;">
+    <div id="gateError" style="display:none;font-size:12px;color:#c0392b;margin:-8px 0 12px;">Please type your name to continue.</div>
+    <button onclick="startFromGate()"
+      style="width:100%;padding:13px;border-radius:10px;border:none;background:#2c6fad;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">
+      Start Exercise
+    </button>
+  </div>
+</div>
+
 <div class="wrap">
   <div class="card">
 
@@ -305,6 +320,7 @@
 
       <button class="btn-secondary" id="copyBtn">Copy My Results</button>
       <div class="status-msg" id="submitStatus">Sending your results to your teacher…</div>
+<button onclick="copyMyResults()" id="copyBtn" style="margin-top:12px;padding:10px 20px;border-radius:10px;border:1.5px solid #ccc;background:transparent;font-size:13px;font-weight:600;cursor:pointer;">📋 Copy my results</button>
     </div>
 
   </div>
@@ -482,7 +498,7 @@
 
     const statusEl = document.getElementById('submitStatus');
     try{
-      document.getElementById('gForm').submit();
+      sendViaFetch(studentName, score, total, mistakes);
       setTimeout(()=>{
         statusEl.textContent = "✓ Results sent to your teacher.";
         statusEl.classList.add('ok-status');
@@ -531,6 +547,51 @@
     setTimeout(()=>{ btn.textContent = originalText; }, 1800);
   }
 })();
+
+  // ── FETCH SUBMISSION (replaces iframe POST) ──
+  async function sendViaFetch(name, score, total, mistakes) {
+    const statusEl = document.getElementById('submitStatus');
+    if (statusEl) { statusEl.textContent = 'Sending results…'; statusEl.className='status-msg'; }
+    const body = new URLSearchParams({
+      'entry.1106597571': name,
+      'entry.26189871':   EXERCISE_NAME,
+      'entry.291802639':  score,
+      'entry.1164298030': total,
+      'entry.818625323':  mistakes
+    });
+    try {
+      await fetch('https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse', {
+        method: 'POST', mode: 'no-cors',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body.toString()
+      });
+      if (statusEl) { statusEl.textContent = '✓ Results sent to your teacher'; statusEl.className='status-msg ok-status'; }
+    } catch(err) {
+      if (statusEl) { statusEl.textContent = '⚠ Could not send — use Copy button below'; statusEl.className='status-msg'; }
+    }
+  }
+
+  // ── NAME GATE ──
+  function startFromGate() {
+    const val = document.getElementById('gateNameInput').value.trim();
+    if (!val) { document.getElementById('gateError').style.display='block'; return; }
+    studentName = val;
+    document.getElementById('gateOverlay').style.display = 'none';
+  }
+  document.getElementById('gateNameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') startFromGate();
+  });
+
+  function copyMyResults() {
+    const score = document.getElementById('scoreBig') ? document.getElementById('scoreBig').textContent : '';
+    const text = 'Name: ' + studentName + '\nExercise: ' + EXERCISE_NAME + '\nScore: ' + score;
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Copied!';
+      setTimeout(function(){ btn.textContent = '📋 Copy my results'; }, 2000);
+    });
+  }
+
 </script>
 </body>
 </html>
