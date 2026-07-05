@@ -6,12 +6,13 @@
 <title>Gap-Fill · Relationships - Group 1 - Attraction & First Steps (Gap-Fill)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
   :root {
     --a1:#F2DCDC; --a2:#C45C6A; --deep:#2B1B2E; --mid:#6B3E5E; --cream:#FDF8F5; --mist:#EDE4E9;
     --correct:#3A7D5E; --wrong:#B03A3A; --correct-bg:#E8F5EF; --wrong-bg:#FDECEA;
   }
   body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--deep); min-height:100vh; padding:0 0 60px; }
+  body.gated { overflow:hidden; }
   header { background:var(--deep); padding:28px 24px 22px; text-align:center; }
   header .eyebrow { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--a1); margin-bottom:6px; }
   header h1 { font-family:'DM Serif Display',serif; font-size:clamp(22px,5.5vw,32px); color:#fff; line-height:1.15; }
@@ -46,17 +47,20 @@
   .score-inner { background:var(--deep); color:#fff; border-radius:14px; padding:18px 22px; text-align:center; }
   .score-inner .big { font-family:'DM Serif Display',serif; font-size:36px; color:var(--a1); }
   .score-inner p { font-size:13px; color:#c4b3be; margin-top:4px; }
+  .submit-status { font-size:12px; margin-top:8px; min-height:18px; }
+  .submit-status.ok  { color:#7ecba5; }
+  .submit-status.err { color:#f4a0a0; }
   .hearts { text-align:center; font-size:22px; padding:22px 0 0; letter-spacing:8px; opacity:0.35; }
-  .gate-overlay { position:fixed; inset:0; background:var(--deep); display:flex; align-items:center; justify-content:center; z-index:999; padding:24px; }
+  .gate-overlay { position:fixed; inset:0; background:rgba(30,20,37,0.97); display:flex; align-items:center; justify-content:center; z-index:999; padding:24px; }
   .gate-box { background:var(--cream); border-radius:16px; padding:32px 26px; max-width:360px; width:100%; text-align:center; }
   .gate-box h2 { font-family:'DM Serif Display',serif; font-size:24px; color:var(--deep); margin-bottom:8px; }
   .gate-box p { font-size:13px; color:var(--mid); margin-bottom:18px; }
-  .gate-box input { width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--mist); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; margin-bottom:14px; }
+  .gate-box input { width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--mist); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; margin-bottom:14px; color:var(--deep); }
   .gate-box input:focus { border-color:var(--a2); }
   .gate-box button { width:100%; padding:13px 20px; border-radius:10px; border:none; background:var(--a2); color:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; }
   .gate-error { display:none; font-size:12px; color:var(--wrong); margin:-8px 0 12px; }
   .gate-error.show { display:block; }
-  .btn-copy { padding:12px 20px; border-radius:10px; border:1.5px solid var(--a1); background:transparent; color:var(--a1); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:12px; }
+  .btn-copy { display:inline-block; padding:10px 20px; border-radius:10px; border:1.5px solid var(--a1); background:transparent; color:var(--a1); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:10px; }
   .btn-copy.copied { background:var(--a1); color:var(--deep); }
 </style>
 </head>
@@ -71,15 +75,6 @@
     <button onclick="startExercise()">Start Exercise</button>
   </div>
 </div>
-
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-<form id="resultsForm" action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-  <input type="text" name="entry.1106597571" id="entryName">
-  <input type="text" name="entry.26189871" id="entryExercise">
-  <input type="text" name="entry.291802639" id="entryScore">
-  <input type="text" name="entry.1164298030" id="entryTotal">
-  <input type="text" name="entry.818625323" id="entryMistakes">
-</form>
 
 <header>
   <div class="eyebrow">Love &amp; Relationships · B1 · Group 1</div>
@@ -168,12 +163,14 @@
   <div class="score-inner">
     <div class="big" id="scoreText"></div>
     <p id="scoreMsg"></p>
+    <div class="submit-status" id="submitStatus"></div>
     <button class="btn-copy" id="copyBtn" onclick="copyResults()">📋 Copy my results</button>
   </div>
 </div>
 
 <script>
   const EXERCISE_NAME = 'Relationships - Group 1 - Attraction & First Steps (Gap-Fill)';
+  const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse';
   let studentName = '';
   let mistakeIndexes = new Set();
   let alreadySubmitted = false;
@@ -182,25 +179,46 @@
   function startExercise() {
     const input = document.getElementById('studentNameInput');
     const error = document.getElementById('gateError');
-    const name  = input.value.trim();
-    if (!name) { error.classList.add('show'); return; }
-    studentName = name;
+    const val   = input.value.trim();
+    if (!val) { error.classList.add('show'); return; }
+    studentName = val;
     document.getElementById('gateOverlay').style.display = 'none';
     document.body.classList.remove('gated');
+    document.querySelector('.blank').focus();
   }
 
-  function submitResults(score, total, mistakes) {
-    document.getElementById('entryName').value     = studentName;
-    document.getElementById('entryExercise').value = EXERCISE_NAME;
-    document.getElementById('entryScore').value    = score;
-    document.getElementById('entryTotal').value    = total;
-    document.getElementById('entryMistakes').value = mistakes;
-    document.getElementById('resultsForm').submit();
+  async function submitResults(score, total, mistakes) {
+    const statusEl = document.getElementById('submitStatus');
+    statusEl.textContent = 'Sending results…';
+    statusEl.className = 'submit-status';
+
+    const body = new URLSearchParams({
+      'entry.1106597571': studentName,
+      'entry.26189871':   EXERCISE_NAME,
+      'entry.291802639':  score,
+      'entry.1164298030': total,
+      'entry.818625323':  mistakes
+    });
+
+    try {
+      await fetch(FORM_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString()
+      });
+      // no-cors means we can't read the response, but if fetch didn't throw, it was sent
+      statusEl.textContent = '✓ Results sent to your teacher';
+      statusEl.className = 'submit-status ok';
+    } catch (err) {
+      statusEl.textContent = '⚠ Could not send results — please use the Copy button below';
+      statusEl.className = 'submit-status err';
+    }
   }
 
   function copyResults() {
     const scoreText = document.getElementById('scoreText').textContent;
-    const text = `Name: ${studentName}\nExercise: ${EXERCISE_NAME}\nScore: ${scoreText}\nMistakes: ${mistakeIndexes.size}`;
+    const text = 'Name: ' + studentName + '\nExercise: ' + EXERCISE_NAME + '\nScore: ' + scoreText + '\nMistakes: ' + mistakeIndexes.size;
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
       btn.textContent = '✓ Copied!';
@@ -212,14 +230,12 @@
   function norm(s) { return s.trim().toLowerCase().replace(/\s+/g,' '); }
 
   function setChip(answer, used) {
-    const chip = document.querySelector(`.chip[data-word="${answer}"]`);
+    const chip = document.querySelector('.chip[data-word="' + answer + '"]');
     if (chip) chip.classList.toggle('used', used);
   }
 
   function checkAnswers() {
-    let correct = 0;
-    let answered = 0;
-
+    let correct = 0, answered = 0;
     cards.forEach((card, idx) => {
       const answer   = card.dataset.answer;
       const input    = card.querySelector('.blank');
@@ -242,15 +258,15 @@
       }
     });
 
-    // Show score and submit as soon as student clicks Check — even if not all blanks are filled
     if (answered > 0) {
       const total = cards.length;
-      document.getElementById('scoreText').textContent = `${correct} / ${total}`;
+      document.getElementById('scoreText').textContent = correct + ' / ' + total;
       document.getElementById('scoreMsg').textContent =
-        correct === total   ? 'Perfect score! Great work! 🎉' :
-        correct >= 5            ? 'Almost there — review the ones you missed.' :
-                              "Keep practicing — you've got this!";
+        correct === total ? 'Perfect score! Great work! 🎉' :
+        correct >= 5          ? 'Almost there — review the ones you missed.' :
+                            "Keep practicing — you've got this!";
       document.getElementById('scoreBanner').classList.add('show');
+      document.getElementById('scoreBanner').scrollIntoView({behavior:'smooth', block:'center'});
 
       if (!alreadySubmitted) {
         alreadySubmitted = true;
@@ -270,11 +286,12 @@
     });
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('used'));
     document.getElementById('scoreBanner').classList.remove('show');
+    document.getElementById('submitStatus').textContent = '';
     mistakeIndexes = new Set();
     alreadySubmitted = false;
   }
 
-  document.querySelectorAll('.blank').forEach(i => i.addEventListener('keydown', e => { if(e.key==='Enter') checkAnswers(); }));
+  document.querySelectorAll('.blank').forEach(inp => inp.addEventListener('keydown', e => { if(e.key==='Enter') checkAnswers(); }));
   document.getElementById('studentNameInput').addEventListener('keydown', e => { if(e.key==='Enter') startExercise(); });
 </script>
 </body>
