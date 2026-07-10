@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete the Dialogue · Relationships - Group 2 - Dating & Being a Couple</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root {
+    --a1:#F2DCDC; --a2:#C45C6A; --deep:#2B1B2E; --mid:#6B3E5E; --cream:#FDF8F5; --mist:#EDE4E9;
+    --correct:#3A7D5E; --wrong:#B03A3A; --correct-bg:#E8F5EF; --wrong-bg:#FDECEA;
+  }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--deep); min-height:100vh; padding:0 0 60px; }
+  body.gated { overflow:hidden; }
+  header { background:var(--deep); padding:28px 24px 22px; text-align:center; }
+  header .eyebrow { font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--a1); margin-bottom:6px; }
+  header h1 { font-family:'DM Serif Display',serif; font-size:clamp(22px,5.5vw,32px); color:#fff; line-height:1.15; }
+  header h1 em { font-style:italic; color:var(--a1); }
+  header .subtitle { margin-top:8px; font-size:13px; color:#c4b3be; }
+
+  .bank-wrap { max-width:680px; margin:24px auto 0; padding:0 16px; }
+  .bank-label { font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--mid); margin-bottom:10px; }
+  .bank { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { background:var(--deep); color:#fff; font-size:13px; font-weight:500; padding:6px 14px; border-radius:20px; user-select:none; transition:opacity 0.2s; }
+  .chip.used { opacity:0.28; text-decoration:line-through; }
+
+  .chat { max-width:680px; margin:28px auto 0; padding:0 16px; display:flex; flex-direction:column; gap:14px; }
+
+  .msg-row { display:flex; flex-direction:column; max-width:82%; }
+  .msg-row.left  { align-self:flex-start; align-items:flex-start; }
+  .msg-row.right { align-self:flex-end;   align-items:flex-end; }
+
+  .msg-name { font-size:11px; font-weight:600; letter-spacing:0.04em; color:var(--mid); margin-bottom:4px; padding:0 4px; }
+
+  .bubble { border-radius:16px; padding:12px 16px; font-size:15px; line-height:1.55; border:1.5px solid var(--mist); background:#fff; }
+  .msg-row.left .bubble   { border-bottom-left-radius:4px; }
+  .msg-row.right .bubble  { border-bottom-left-radius:16px; border-bottom-right-radius:4px; background:var(--a1); }
+
+  .bubble.correct-card { border-color:var(--correct); background:var(--correct-bg) !important; }
+  .bubble.wrong-card   { border-color:var(--wrong);   background:var(--wrong-bg) !important; }
+
+  .blank { border:none; border-bottom:2.5px solid var(--mid); background:transparent; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; color:var(--deep); padding:2px 4px; outline:none; text-align:center; transition:border-color 0.2s; min-width:80px; }
+  .blank:focus { border-color:var(--a2); }
+  .blank.correct-input { border-color:var(--correct); color:var(--correct); }
+  .blank.wrong-input   { border-color:var(--wrong);   color:var(--wrong); }
+
+  .feedback-inline { font-size:12px; font-weight:600; margin-top:5px; display:none; }
+  .feedback-inline.show { display:block; }
+  .feedback-inline.ok  { color:var(--correct); }
+  .feedback-inline.err { color:var(--wrong); }
+
+  .actions { max-width:680px; margin:26px auto 0; padding:0 16px; display:flex; gap:10px; flex-wrap:wrap; }
+  .btn { flex:1; min-width:130px; padding:14px 20px; border-radius:12px; border:none; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:transform 0.12s; }
+  .btn:active { transform:scale(0.97); }
+  .btn-check { background:var(--a2); color:#fff; }
+  .btn-reset { background:var(--mist); color:var(--deep); }
+
+  .score-banner { max-width:680px; margin:20px auto 0; padding:0 16px; display:none; }
+  .score-banner.show { display:block; }
+  .score-inner { background:var(--deep); color:#fff; border-radius:14px; padding:18px 22px; text-align:center; }
+  .score-inner .big { font-family:'DM Serif Display',serif; font-size:36px; color:var(--a1); }
+  .score-inner p { font-size:13px; color:#c4b3be; margin-top:4px; }
+  .submit-status { font-size:12px; margin-top:8px; min-height:18px; }
+  .submit-status.ok  { color:#7ecba5; }
+  .submit-status.err { color:#f4a0a0; }
+
+  .hearts { text-align:center; font-size:22px; padding:22px 0 0; letter-spacing:8px; opacity:0.35; }
+
+  .gate-overlay { position:fixed; inset:0; background:rgba(30,20,37,0.97); display:flex; align-items:center; justify-content:center; z-index:999; padding:24px; }
+  .gate-box { background:var(--cream); border-radius:16px; padding:32px 26px; max-width:360px; width:100%; text-align:center; }
+  .gate-box h2 { font-family:'DM Serif Display',serif; font-size:24px; color:var(--deep); margin-bottom:8px; }
+  .gate-box p { font-size:13px; color:var(--mid); margin-bottom:18px; }
+  .gate-box input { width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--mist); font-family:'DM Sans',sans-serif; font-size:15px; outline:none; margin-bottom:14px; color:var(--deep); }
+  .gate-box input:focus { border-color:var(--a2); }
+  .gate-box button { width:100%; padding:13px 20px; border-radius:10px; border:none; background:var(--a2); color:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; }
+  .gate-error { display:none; font-size:12px; color:var(--wrong); margin:-8px 0 12px; }
+  .gate-error.show { display:block; }
+  .btn-copy { display:inline-block; padding:10px 20px; border-radius:10px; border:1.5px solid var(--a1); background:transparent; color:var(--a1); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:10px; }
+  .btn-copy.copied { background:var(--a1); color:var(--deep); }
+</style>
+</head>
+<body class="gated">
+
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-box">
+    <h2>Before you start</h2>
+    <p>Enter your name so your teacher can see your results.</p>
+    <input type="text" id="studentNameInput" placeholder="Your full name" autocomplete="off">
+    <div class="gate-error" id="gateError">Please type your name to continue.</div>
+    <button onclick="startExercise()">Start Exercise</button>
+  </div>
+</div>
+
+<header>
+  <div class="eyebrow">Love &amp; Relationships · B1 · Group 2</div>
+  <h1>Dating &amp; <em>Being a Couple</em></h1>
+  <div class="subtitle">Chloe &amp; Emma · Fill in each blank with the correct word or phrase from the word bank.</div>
+</header>
+
+<div class="hearts">💑 💕 💍</div>
+
+<div class="bank-wrap">
+  <div class="bank-label">Word Bank</div>
+  <div class="bank" id="bank">
+    <span class="chip" data-word="dating">dating</span>
+    <span class="chip" data-word="seeing">seeing</span>
+    <span class="chip" data-word="went on a date">went on a date</span>
+    <span class="chip" data-word="chemistry">chemistry</span>
+    <span class="chip" data-word="going out with">going out with</span>
+    <span class="chip" data-word="made it official">made it official</span>
+    <span class="chip" data-word="getting serious">getting serious</span>
+    <span class="chip" data-word="spend time together">spend time together</span>
+    <span class="chip" data-word="together">together</span>
+    <span class="chip" data-word="fell in love">fell in love</span>
+    <span class="chip" data-word="in love">in love</span>
+  </div>
+</div>
+
+<div class="chat" id="chat">
+
+  <div class="msg-row left" data-answer="dating">
+    <div class="msg-name">Chloe</div>
+    <div class="bubble">
+      Hey, are you two officially 
+      <input class="blank" type="text" style="width:90px" placeholder="_________" autocomplete="off" spellcheck="false">
+      , or is it still casual?
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row right" data-answer="seeing">
+    <div class="msg-name">Emma</div>
+    <div class="bubble">
+      We're just 
+      <input class="blank" type="text" style="width:90px" placeholder="_________" autocomplete="off" spellcheck="false">
+       each other for now.
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row left" data-answer="went on a date">
+    <div class="msg-name">Chloe</div>
+    <div class="bubble">
+      Didn't you say you 
+      <input class="blank" type="text" style="width:140px" placeholder="______________" autocomplete="off" spellcheck="false">
+       last Friday?
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row right" data-answer="chemistry">
+    <div class="msg-name">Emma</div>
+    <div class="bubble">
+      We did! Honestly, we have so much 
+      <input class="blank" type="text" style="width:110px" placeholder="___________" autocomplete="off" spellcheck="false">
+      .
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row left" data-answer="going out with">
+    <div class="msg-name">Chloe</div>
+    <div class="bubble">
+      Are you guys 
+      <input class="blank" type="text" style="width:140px" placeholder="______________" autocomplete="off" spellcheck="false">
+       each other now?
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row right" data-answer="made it official">
+    <div class="msg-name">Emma</div>
+    <div class="bubble">
+      Pretty much! We even 
+      <input class="blank" type="text" style="width:150px" placeholder="_______________" autocomplete="off" spellcheck="false">
+       last week.
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row left" data-answer="getting serious">
+    <div class="msg-name">Chloe</div>
+    <div class="bubble">
+      Wow, things are 
+      <input class="blank" type="text" style="width:130px" placeholder="_____________" autocomplete="off" spellcheck="false">
+       fast!
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row right" data-answer="spend time together">
+    <div class="msg-name">Emma</div>
+    <div class="bubble">
+      I know! We try to 
+      <input class="blank" type="text" style="width:160px" placeholder="________________" autocomplete="off" spellcheck="false">
+       almost every day.
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row left" data-answer="together">
+    <div class="msg-name">Chloe</div>
+    <div class="bubble">
+      How long have you two been 
+      <input class="blank" type="text" style="width:100px" placeholder="__________" autocomplete="off" spellcheck="false">
+       now?
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row right" data-answer="fell in love">
+    <div class="msg-name">Emma</div>
+    <div class="bubble">
+      About three weeks, but honestly, I think I 
+      <input class="blank" type="text" style="width:120px" placeholder="____________" autocomplete="off" spellcheck="false">
+       pretty fast.
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+  <div class="msg-row left" data-answer="in love">
+    <div class="msg-name">Chloe</div>
+    <div class="bubble">
+      Aww! Sounds like you're already 
+      <input class="blank" type="text" style="width:90px" placeholder="_________" autocomplete="off" spellcheck="false">
+       with him.
+    </div>
+    <div class="feedback-inline"></div>
+  </div>
+
+</div>
+
+<div class="actions">
+  <button class="btn btn-check" onclick="checkAnswers()">Check answers</button>
+  <button class="btn btn-reset" onclick="resetAll()">Try again</button>
+</div>
+
+<div class="score-banner" id="scoreBanner">
+  <div class="score-inner">
+    <div class="big" id="scoreText"></div>
+    <p id="scoreMsg"></p>
+    <div class="submit-status" id="submitStatus"></div>
+    <button class="btn-copy" id="copyBtn" onclick="copyResults()">📋 Copy my results</button>
+  </div>
+</div>
+
+<script>
+  const EXERCISE_NAME = 'Relationships - Group 2 - Dating & Being a Couple (Complete the Dialogue)';
+  const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse';
+  let studentName = '';
+  let mistakeIndexes = new Set();
+  let alreadySubmitted = false;
+  const cards = document.querySelectorAll('.msg-row[data-answer]');
+
+  function startExercise() {
+    const input = document.getElementById('studentNameInput');
+    const error = document.getElementById('gateError');
+    const val   = input.value.trim();
+    if (!val) { error.classList.add('show'); return; }
+    studentName = val;
+    document.getElementById('gateOverlay').style.display = 'none';
+    document.body.classList.remove('gated');
+    document.querySelector('.blank').focus();
+  }
+
+  async function submitResults(score, total, mistakes) {
+    const statusEl = document.getElementById('submitStatus');
+    statusEl.textContent = 'Sending results…';
+    statusEl.className = 'submit-status';
+
+    const body = new URLSearchParams({
+      'entry.1106597571': studentName,
+      'entry.26189871':   EXERCISE_NAME,
+      'entry.291802639':  score,
+      'entry.1164298030': total,
+      'entry.818625323':  mistakes
+    });
+
+    try {
+      await fetch(FORM_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString()
+      });
+      statusEl.textContent = '✓ Results sent to your teacher';
+      statusEl.className = 'submit-status ok';
+    } catch (err) {
+      statusEl.textContent = '⚠ Could not send results — please use the Copy button below';
+      statusEl.className = 'submit-status err';
+    }
+  }
+
+  function copyResults() {
+    const scoreText = document.getElementById('scoreText').textContent;
+    const text = 'Name: ' + studentName + '\nExercise: ' + EXERCISE_NAME + '\nScore: ' + scoreText + '\nMistakes: ' + mistakeIndexes.size;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy my results'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function norm(s) { return s.trim().toLowerCase().replace(/\s+/g,' '); }
+
+  function setChip(answer, used) {
+    const chip = document.querySelector('.chip[data-word="' + answer + '"]');
+    if (chip) chip.classList.toggle('used', used);
+  }
+
+  function checkAnswers() {
+    let correct = 0, answered = 0;
+    cards.forEach((card, idx) => {
+      const answer   = card.dataset.answer;
+      const input    = card.querySelector('.blank');
+      const bubble   = card.querySelector('.bubble');
+      const feedback = card.querySelector('.feedback-inline');
+      if (norm(input.value) === '') return;
+      answered++;
+      if (norm(input.value) === norm(answer)) {
+        correct++;
+        input.classList.add('correct-input'); input.classList.remove('wrong-input');
+        bubble.classList.add('correct-card'); bubble.classList.remove('wrong-card');
+        feedback.textContent = '✓ Correct!';
+        feedback.className = 'feedback-inline show ok';
+        setChip(answer, true);
+      } else {
+        input.classList.add('wrong-input'); input.classList.remove('correct-input');
+        bubble.classList.add('wrong-card'); bubble.classList.remove('correct-card');
+        feedback.textContent = '✗ Not quite — try again!';
+        feedback.className = 'feedback-inline show err';
+        mistakeIndexes.add(idx);
+      }
+    });
+
+    if (answered > 0) {
+      const total = cards.length;
+      document.getElementById('scoreText').textContent = correct + ' / ' + total;
+      document.getElementById('scoreMsg').textContent =
+        correct === total ? 'Perfect score! Great work! 🎉' :
+        correct >= Math.ceil(total*0.6) ? 'Almost there — review the ones you missed.' :
+                            "Keep practicing — you've got this!";
+      document.getElementById('scoreBanner').classList.add('show');
+      document.getElementById('scoreBanner').scrollIntoView({behavior:'smooth', block:'center'});
+
+      if (!alreadySubmitted) {
+        alreadySubmitted = true;
+        submitResults(correct, total, mistakeIndexes.size);
+      }
+    }
+  }
+
+  function resetAll() {
+    cards.forEach(card => {
+      const input    = card.querySelector('.blank');
+      const bubble   = card.querySelector('.bubble');
+      const feedback = card.querySelector('.feedback-inline');
+      input.value = '';
+      input.classList.remove('correct-input','wrong-input');
+      bubble.classList.remove('correct-card','wrong-card');
+      feedback.className = 'feedback-inline';
+    });
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('used'));
+    document.getElementById('scoreBanner').classList.remove('show');
+    document.getElementById('submitStatus').textContent = '';
+    mistakeIndexes = new Set();
+    alreadySubmitted = false;
+  }
+
+  document.querySelectorAll('.blank').forEach(inp => inp.addEventListener('keydown', e => { if(e.key==='Enter') checkAnswers(); }));
+  document.getElementById('studentNameInput').addEventListener('keydown', e => { if(e.key==='Enter') startExercise(); });
+</script>
+</body>
+</html>
