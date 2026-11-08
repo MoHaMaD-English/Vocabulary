@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Success Vocabulary — Group 2 Gap-Fill</title>
+<style>
+  :root{
+    --g-900:#1b2a4a;
+    --g-700:#26385e;
+    --g-500:#3fa796;
+    --g-100:#e7f5f2;
+    --paper:#ffffff;
+    --coin:#d9a566;
+    --coin-deep:#b8863e;
+    --correct:#1f7a6a;
+    --error:#c0503f;
+    --ink:#16213a;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Segoe UI",Verdana,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--g-900) 0%,var(--g-700) 45%,var(--g-500) 100%);
+    color:var(--ink);
+    min-height:100vh;
+    padding:24px 14px 60px;
+  }
+  .wrap{ max-width:720px; margin:0 auto; }
+  .card{
+    background:var(--paper);
+    border-radius:18px;
+    padding:28px 24px;
+    box-shadow:0 20px 50px rgba(5,12,25,0.35);
+  }
+  .eyebrow{
+    display:inline-block;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--g-500);
+    background:var(--g-100);
+    padding:4px 10px;
+    border-radius:100px;
+    margin-bottom:10px;
+  }
+  h1{ font-size:1.5rem; line-height:1.25; margin:0 0 6px; color:var(--g-900); }
+  p.sub{ margin:0 0 18px; color:#4c5c74; font-size:0.95rem; line-height:1.5; }
+  .cloud-divider{
+    display:flex; align-items:center; gap:8px; margin:22px 0 18px;
+    color:var(--g-500); font-size:0.8rem; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase;
+  }
+  .cloud-divider::before,.cloud-divider::after{
+    content:""; flex:1; height:1px; background:#dce6f0;
+  }
+  button{ font-family:inherit; cursor:pointer; border:none; }
+  .btn-primary{
+    background:var(--coin); color:#2b1a03; font-weight:700; font-size:1rem;
+    padding:13px 22px; border-radius:12px; width:100%; margin-top:18px;
+    transition:transform .12s ease, background .15s ease;
+    box-shadow:0 8px 18px rgba(184,134,62,0.35);
+  }
+  .btn-primary:hover{ background:var(--coin-deep); }
+  .btn-primary:active{ transform:scale(0.98); }
+  .btn-secondary{
+    background:transparent; border:2px solid var(--g-500); color:var(--g-500);
+    font-weight:700; font-size:0.9rem; padding:10px 18px; border-radius:12px;
+    width:100%; margin-top:10px;
+  }
+  .btn-secondary:hover{ background:var(--g-100); }
+  .hidden{ display:none !important; }
+  .err-msg{ color:var(--error); font-size:0.85rem; margin-top:6px; font-weight:600; }
+
+  /* ---------- Name gate ---------- */
+  #gateOverlay{
+    position:fixed; inset:0; background:rgba(10,16,32,0.92);
+    display:flex; align-items:center; justify-content:center; z-index:9999; padding:24px;
+  }
+  #gateOverlay .gate-card{
+    background:#fff; border-radius:16px; padding:32px 26px; max-width:360px;
+    width:100%; text-align:center;
+  }
+  #gateOverlay h2{ font-size:1.35rem; margin:0 0 8px; color:var(--g-900); }
+  #gateOverlay p{ font-size:0.85rem; color:#666; margin:0 0 18px; line-height:1.4; }
+  #gateOverlay input[type=text]{
+    width:100%; padding:12px 14px; border-radius:10px; border:2px solid var(--g-100);
+    background:var(--g-100); font-size:1rem; font-family:inherit; color:var(--ink);
+    outline:none; margin-bottom:6px;
+  }
+  #gateOverlay input[type=text]:focus{ border-color:var(--g-500); background:#fff; }
+
+  /* ---------- Word bank ---------- */
+  .wordbank{
+    display:flex; flex-wrap:wrap; gap:8px; padding:14px;
+    background:var(--g-100); border-radius:12px; margin-bottom:6px;
+  }
+  .wb-item{
+    background:var(--paper); border:1.5px solid var(--g-500); color:var(--g-900);
+    font-weight:600; font-size:0.85rem; padding:6px 12px; border-radius:100px;
+  }
+
+  /* ---------- Story ---------- */
+  .story{ font-size:1.02rem; line-height:2.1; color:var(--ink); white-space:pre-line; }
+  .blank-input{
+    width:265px; max-width:100%; padding:5px 8px; font-size:0.95rem; font-family:inherit;
+    text-align:center; border:none; border-bottom:2.5px solid var(--g-500);
+    background:var(--g-100); border-radius:6px 6px 0 0; color:var(--g-900); font-weight:700;
+  }
+  .blank-input:focus{ outline:none; background:#dbf0eb; }
+  .blank-input.correct{ border-bottom-color:var(--correct); background:#e2f4ef; color:#155c50; }
+  .blank-input.incorrect{ border-bottom-color:var(--error); background:#fbeae7; color:#8a3527; }
+
+  /* ---------- Results ---------- */
+  .score-circle{
+    width:132px; height:132px; border-radius:50%; background:var(--g-100);
+    border:6px solid var(--coin); display:flex; align-items:center; justify-content:center;
+    flex-direction:column; margin:6px auto 18px;
+  }
+  .score-circle .big{ font-size:2.1rem; font-weight:800; color:var(--g-900); line-height:1; }
+  .score-circle .small{
+    font-size:0.72rem; color:#516180; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.05em; margin-top:2px;
+  }
+  .review-list{ list-style:none; margin:0; padding:0; }
+  .review-list li{
+    padding:10px 12px; border-radius:10px; margin-bottom:8px; font-size:0.9rem;
+    display:flex; justify-content:space-between; gap:10px; align-items:center;
+  }
+  .review-list li.ok{ background:#e2f4ef; color:#155c50; }
+  .review-list li.no{ background:#fbeae7; color:#8a3527; }
+  .review-list .num{ font-weight:700; opacity:0.65; margin-right:6px; }
+  .review-list .answer{ font-weight:700; }
+  .status-msg{ text-align:center; font-size:0.85rem; color:#516180; margin-top:14px; }
+  #submitStatus.ok-status{ color:var(--correct); font-weight:700; }
+  footer.credit{ text-align:center; color:#dce6f0; font-size:0.72rem; margin-top:16px; }
+</style>
+</head>
+<body>
+
+<!-- NAME GATE -->
+<div id="gateOverlay">
+  <div class="gate-card">
+    <h2>Before you start</h2>
+    <p>Enter your name so your teacher can see your results.</p>
+    <input type="text" id="gateNameInput" placeholder="Your full name" autocomplete="off">
+    <div class="err-msg hidden" id="gateError">Please type your name to continue.</div>
+    <button class="btn-primary" id="gateStartBtn" style="margin-top:10px;">Start Exercise</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+
+    <!-- ===================== SCREEN 1: EXERCISE ===================== -->
+    <div id="screenExercise">
+      <span class="eyebrow">Success Vocabulary · Group 2</span>
+      <h1>Daniel’s First Marathon — Story Gap-Fill</h1>
+      <p class="sub">A short story about an accountant who trains for his first marathon. Read it, then fill in each blank with the correct collocation from the word bank. Each item is used only once — type it exactly as it appears, then tap "Check My Answers."</p>
+
+      <div class="cloud-divider">Word Bank</div>
+      <div class="wordbank" id="wordBank"></div>
+
+      <div class="cloud-divider">The Story</div>
+      <p class="story" id="storyText"></p>
+
+      <button class="btn-primary" id="checkBtn">Check My Answers</button>
+      <div class="err-msg hidden" id="fillError">Please fill in every blank before checking.</div>
+    </div>
+
+    <!-- ===================== SCREEN 2: RESULTS ===================== -->
+    <div id="screenResults" class="hidden">
+      <span class="eyebrow">Results</span>
+      <h1 id="resultsHeading">Nice work!</h1>
+      <p class="sub" id="resultsSub"></p>
+
+      <div class="score-circle">
+        <div class="big" id="scoreBig">0/10</div>
+        <div class="small">Correct</div>
+      </div>
+
+      <div class="cloud-divider">Answer Review</div>
+      <ul class="review-list" id="reviewList"></ul>
+
+      <button class="btn-secondary" id="copyBtn">📋 Copy my results</button>
+      <div class="status-msg" id="submitStatus">Sending your results to your teacher…</div>
+    </div>
+
+  </div>
+  <footer class="credit">Success &amp; Self-Development Vocabulary · Group 2 · B1 American English</footer>
+</div>
+
+<!-- Hidden iframe target so the Google Form submits silently -->
+<iframe name="hiddenSubmitFrame" style="display:none;"></iframe>
+
+<!-- Hidden Google Form, submitted programmatically -->
+<form id="gForm"
+  action="https://docs.google.com/forms/d/e/1FAIpQLSfxxPg7zRfSFLqHI5UkGjLhzfg7b7cA4FUdgAHXLO6a00qy8w/formResponse"
+  method="POST" target="hiddenSubmitFrame" style="display:none;">
+  <input type="text" name="entry.1106597571" id="fName">
+  <input type="text" name="entry.26189871" id="fExercise">
+  <input type="text" name="entry.291802639" id="fScore">
+  <input type="text" name="entry.1164298030" id="fTotal">
+  <input type="text" name="entry.818625323" id="fMistakes">
+</form>
+
+<script>
+(function(){
+  const EXERCISE_NAME = "Success Group 2 - Story Gap-Fill";
+
+  // Correct answers in blank order
+  const answers = ["step out of your comfort zone", "improve yourself", "push yourself", "gain experience", "stay motivated", "keep trying", "learn from mistakes", "face a challenge", "follow your dreams", "never give up"];
+
+  // Word bank shown to student (alphabetized so order isn't a hint)
+  const bank = [...answers].sort();
+
+  const storyParts = [
+    "Daniel was a quiet accountant who spent most of his days at a desk. One evening, his friend Tom told him, “Sometimes you have to ",
+    " if you really want to ",
+    ". Why don’t you join my running club?”\n\nDaniel was nervous, but he went. At first, even one mile felt impossible. The coach, Ms. Lopez, smiled and said, “Don’t be afraid to ",
+    " a little more each week.” He also joined the weekend group runs to ",
+    " before his first race.\n\nOf course, it wasn’t always easy. In the cold, rainy weeks, it was hard to ",
+    ". In his first 10K, he started too fast and had to walk the last mile. Daniel felt embarrassed, but Tom told him, “Just ",
+    ". Every runner makes mistakes — what matters is that you ",
+    ".”\n\nTraining for a full marathon meant he had to ",
+    " every single week: longer runs, tired legs, and early mornings. Ms. Lopez reminded him, “It’s important to ",
+    ", even when other people think they’re crazy.”\n\nOn race day, at mile twenty, Daniel’s legs were burning. He wanted to stop, but he whispered to himself, “I will ",
+    ".” Two hours later, he crossed the finish line with his arms in the air, and Tom was there, cheering louder than anyone."
+  ];
+
+  let studentName = "";
+
+  // ---- Build word bank ----
+  const wbEl = document.getElementById('wordBank');
+  bank.forEach(w=>{
+    const span = document.createElement('span');
+    span.className = 'wb-item';
+    span.textContent = w;
+    wbEl.appendChild(span);
+  });
+
+  // ---- Build story with inputs ----
+  const storyEl = document.getElementById('storyText');
+  storyEl.innerHTML = "";
+  storyParts.forEach((chunk, i)=>{
+    storyEl.appendChild(document.createTextNode(chunk));
+    if(i < answers.length){
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'blank-input';
+      inp.setAttribute('data-index', i);
+      inp.setAttribute('autocomplete','off');
+      inp.setAttribute('autocapitalize','none');
+      inp.setAttribute('aria-label', 'Blank ' + (i+1));
+      storyEl.appendChild(inp);
+    }
+  });
+
+  // ---- Name gate ----
+  function startFromGate(){
+    const val = document.getElementById('gateNameInput').value.trim();
+    const err = document.getElementById('gateError');
+    if(!val){ err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    studentName = val;
+    document.getElementById('gateOverlay').style.display = 'none';
+  }
+  document.getElementById('gateStartBtn').addEventListener('click', startFromGate);
+  document.getElementById('gateNameInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') startFromGate();
+  });
+
+  // ---- Check answers ----
+  document.getElementById('checkBtn').addEventListener('click', ()=>{
+    const inputs = document.querySelectorAll('.blank-input');
+    let allFilled = true;
+    inputs.forEach(inp=>{ if(!inp.value.trim()) allFilled = false; });
+
+    const fillErr = document.getElementById('fillError');
+    if(!allFilled){
+      fillErr.classList.remove('hidden');
+      return;
+    }
+    fillErr.classList.add('hidden');
+
+    let correctCount = 0;
+    const mistakes = [];
+    const reviewList = document.getElementById('reviewList');
+    reviewList.innerHTML = "";
+
+    inputs.forEach(inp=>{
+      const idx = parseInt(inp.getAttribute('data-index'),10);
+      const correctWord = answers[idx];
+      const typed = inp.value.trim().replace(/\s+/g,' ');
+      const isCorrect = typed.toLowerCase() === correctWord.toLowerCase();
+
+      inp.classList.remove('correct','incorrect');
+      inp.classList.add(isCorrect ? 'correct' : 'incorrect');
+      inp.disabled = true;
+
+      const li = document.createElement('li');
+      li.className = isCorrect ? 'ok' : 'no';
+      const label = document.createElement('span');
+      const num = document.createElement('span');
+      num.className = 'num';
+      num.textContent = (idx+1) + '.';
+      label.appendChild(num);
+      label.appendChild(document.createTextNode(isCorrect ? 'Correct!' : 'You wrote "' + (typed || '—') + '"'));
+      const answerSpan = document.createElement('span');
+      answerSpan.className = 'answer';
+      answerSpan.textContent = isCorrect ? '✓ ' + correctWord : '→ ' + correctWord;
+      li.appendChild(label);
+      li.appendChild(answerSpan);
+      reviewList.appendChild(li);
+
+      if(isCorrect){
+        correctCount++;
+      } else {
+        mistakes.push(correctWord + " (wrote: " + (typed || "blank") + ")");
+      }
+    });
+
+    document.getElementById('scoreBig').textContent = correctCount + "/" + answers.length;
+    const heading = document.getElementById('resultsHeading');
+    const sub = document.getElementById('resultsSub');
+    if(correctCount === answers.length){
+      heading.textContent = "Perfect score, " + studentName + "!";
+      sub.textContent = "You got every collocation right. Great job!";
+    } else if(correctCount >= Math.ceil(answers.length * 0.7)){
+      heading.textContent = "Nice work, " + studentName + "!";
+      sub.textContent = "You're doing well with these collocations. Check the review below.";
+    } else {
+      heading.textContent = "Good try, " + studentName + "!";
+      sub.textContent = "Take a look at the ones you missed, and try the practice again soon.";
+    }
+
+    submitResults(studentName, correctCount, answers.length, mistakes);
+
+    document.getElementById('screenExercise').classList.add('hidden');
+    document.getElementById('screenResults').classList.remove('hidden');
+    window.scrollTo(0,0);
+  });
+
+  // ---- Submit to Google Form (silent, via hidden iframe + form POST) ----
+  function submitResults(name, score, total, mistakes){
+    document.getElementById('fName').value = name;
+    document.getElementById('fExercise').value = EXERCISE_NAME;
+    document.getElementById('fScore').value = score;
+    document.getElementById('fTotal').value = total;
+    document.getElementById('fMistakes').value = mistakes.length ? mistakes.join("; ") : "None";
+
+    const statusEl = document.getElementById('submitStatus');
+    try{
+      document.getElementById('gForm').submit();
+      setTimeout(()=>{
+        statusEl.textContent = "\u2713 Results sent to your teacher.";
+        statusEl.classList.add('ok-status');
+      }, 900);
+    } catch(e){
+      statusEl.textContent = "Results couldn't be sent automatically. Please use \"Copy my results\" and send them manually.";
+    }
+  }
+
+  // ---- Copy results backup button ----
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    const score = document.getElementById('scoreBig').textContent;
+    const mistakesArr = [];
+    document.querySelectorAll('#reviewList li.no .answer').forEach(el=>{
+      mistakesArr.push(el.textContent.replace('→ ','').trim());
+    });
+    const text = "Name: " + studentName +
+      "\nExercise: " + EXERCISE_NAME +
+      "\nScore: " + score +
+      "\nMistakes: " + (mistakesArr.length ? mistakesArr.join(", ") : "None");
+
+    const btn = document.getElementById('copyBtn');
+    const originalText = btn.textContent;
+
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>{
+        btn.textContent = "✓ Copied!";
+        setTimeout(()=>{ btn.textContent = originalText; }, 1800);
+      }).catch(()=>{ fallbackCopy(text, btn, originalText); });
+    } else {
+      fallbackCopy(text, btn, originalText);
+    }
+  });
+
+  function fallbackCopy(text, btn, originalText){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand('copy'); btn.textContent = "✓ Copied!"; }
+    catch(e){ btn.textContent = "Copy failed — select manually"; }
+    document.body.removeChild(ta);
+    setTimeout(()=>{ btn.textContent = originalText; }, 1800);
+  }
+})();
+</script>
+</body>
+</html>
